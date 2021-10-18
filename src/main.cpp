@@ -34,19 +34,24 @@ vector<double> get_body(string body_name){
         }
     }
 
+    return data;
     //close file
     file.close();
 }
 
+void print_top_menu(){
+    
+}
+void print_body_menu(){
 
-
+}
 
 
 int main(int argc, char *argv[]){
    // NEED PINS FOR EASYDRIVER
    // EasyDriver::EasyDriver drive = new EasyDriver();
     
-
+    cout << "System Initlized" << endl;
 
 
     return 0;
