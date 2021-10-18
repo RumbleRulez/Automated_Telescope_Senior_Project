@@ -73,7 +73,7 @@ int main(int argc, char *argv[]){
     
         //print choice menu
         print_top_menu();
-        
+        cin >> top_choice;
         switch(top_choice){
             case 0:
                 cout << "Thank you for using this product!" << endl;
@@ -83,7 +83,7 @@ int main(int argc, char *argv[]){
                 print_body_menu();
                 break;
             case 2:
-                
+
                 break;
             default:
                 cout << "Invalid option, please input the number corresponding to the choice" << endl;
