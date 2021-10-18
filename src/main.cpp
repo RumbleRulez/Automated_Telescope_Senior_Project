@@ -42,8 +42,12 @@ vector<double> get_body(string body_name){
 }
 //print vector
 void print_elev_azi_vector(vector<double> v){    
-    for(int i = 0; i < v.size(); i+2){
-        cout << v[i] << " " << v[i+1] << endl;
+    for(int i = 0; i < v.size(); i++){
+        if(i%2 == 0){
+            cout << v[i] << ", ";
+        }else{
+            cout << v[i] << endl;
+        }
     }
     return;
 }   
