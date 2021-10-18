@@ -108,6 +108,7 @@ int main(int argc, char *argv[]){
             case 1:
                 print_body_menu();
                 future_pos = get_body("testData");
+                print_elev_azi_vector(future_pos);
                 break;
             case 2:
                 cout << "Please input new elevation in degrees:" << endl;
