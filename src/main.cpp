@@ -40,10 +40,17 @@ vector<double> get_body(string body_name){
 }
 
 void print_top_menu(){
-    
+    cout << "Welcome to the automated telescope tracking interface. \nPlease press the number corresponding to the desired action:" << endl;
+    cout << "1. Track a Celestial body by name" << endl;
+    cout << "2. Track telescope to coordinate" << endl;
+    cout << "0. Quit" << endl;
+
+    return;
 }
 void print_body_menu(){
+    cout << "1.Earth's moon" << endl;
 
+    return;
 }
 
 
@@ -51,8 +58,9 @@ int main(int argc, char *argv[]){
    // NEED PINS FOR EASYDRIVER
    // EasyDriver::EasyDriver drive = new EasyDriver();
     
-    cout << "System Initlized" << endl;
-
+    cout << "System Initialized" << endl;
+    print_body_menu();
+    print_top_menu();
 
     return 0;
 }
