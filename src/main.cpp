@@ -34,9 +34,11 @@ vector<double> get_body(string body_name){
         }
     }
 
-    return data;
     //close file
     file.close();
+
+    return data;
+
 }
 
 //print top level menu
@@ -55,6 +57,19 @@ void print_body_menu(){
     return;
 }
 
+// double get_change_pos(vector<double> future, vector<double> current){
+//     return ;
+// }
+
+//void change_elev(){
+
+//}
+
+//void change_azi(){
+
+//}
+
+//bool is_danger(){}
 
 int main(int argc, char *argv[]){
    // NEED PINS FOR EASYDRIVER
@@ -65,6 +80,9 @@ int main(int argc, char *argv[]){
     bool isOn = true;
     double azi, elev;
     string body;
+
+    vector<double> future_pos;
+
     //declare sys start
     cout << "System Initialized" << endl;
 
@@ -72,8 +90,10 @@ int main(int argc, char *argv[]){
     while(isOn == true){
     
         //print choice menu
+        //and take in choice for top level
         print_top_menu();
         cin >> top_choice;
+
         switch(top_choice){
             case 0:
                 cout << "Thank you for using this product!" << endl;
@@ -81,9 +101,13 @@ int main(int argc, char *argv[]){
                 break;
             case 1:
                 print_body_menu();
+                future_pos = get_body("testData");
                 break;
             case 2:
-
+                cout << "Please input new elevation in degrees:" << endl;
+                cin >> elev;
+                cout << "Please input new azimuth in degrees:" << endl;
+                cin >> azi;
                 break;
             default:
                 cout << "Invalid option, please input the number corresponding to the choice" << endl;
