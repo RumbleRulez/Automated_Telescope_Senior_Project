@@ -40,7 +40,13 @@ vector<double> get_body(string body_name){
     return data;
 
 }
-
+//print vector
+void print_elev_azi_vector(vector<double> v){    
+    for(int i = 0; i < v.size(); i+2){
+        cout << v[i] << " " << v[i+1] << endl;
+    }
+    return;
+}   
 //print top level menu
 void print_top_menu(){
     cout << "Welcome to the automated telescope tracking interface. \nPlease press the number corresponding to the desired action:" << endl;
