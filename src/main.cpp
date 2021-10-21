@@ -1,10 +1,15 @@
 #include <iostream>
 #include <math.h>
+
+//keep this uncommented when not compiling on BBB
+//calls unix and microcontroller libraries that windows hates
 //#include <EasyDriver.h>
+
 #include <fstream>
 #include <vector>
 #include <string>
 #include <sstream>
+
 using namespace std;
 
 vector<vector<double>> get_body(string body_name){
@@ -44,6 +49,7 @@ vector<vector<double>> get_body(string body_name){
     return data;
 
 }
+
 //print vector
 void print_elev_azi_vector(vector<vector<double>> v){    
     for(int i = 0; i < v.size(); i++){
@@ -53,7 +59,8 @@ void print_elev_azi_vector(vector<vector<double>> v){
         cout << endl;
     }
     return;
-}   
+}  
+
 //print top level menu
 void print_top_menu(){
     cout << "Welcome to the automated telescope tracking interface. \nPlease press the number corresponding to the desired action:" << endl;
@@ -65,12 +72,12 @@ void print_top_menu(){
 }
 //print menu for celestial body
 void print_body_menu(){
-    cout << "1.Earth's moon" << endl;
-
+    cout << "0.Earth's moon" << endl;
+    cout << "1.Mars" << endl;
     return;
 }
-
-vector<vector<double>> select_body(int in, vector<vector<double>> v){
+//body selection from submenu
+vector<vector<double>> select_body(int in){
     switch(in){
         case 0:
             return get_body("Moon");
@@ -88,9 +95,14 @@ vector<vector<double>> select_body(int in, vector<vector<double>> v){
 
 // }
 
-// double get_change_pos(vector<double> future, vector<double> current, int time_index){
-//     
-// }
+vector<double> get_change_pos(vector<vector<double>> future, vector<double> current, int time_index){
+    vector<double> delta;
+     
+     delta[0] = future[time_index][0] - current[0];
+     delta[1] = future[time_index][1] - current[1];
+
+     return delta;
+}
 
 //void change_elev(vector<vector<double>> data, int time, ){
 //
@@ -107,7 +119,7 @@ int main(int argc, char *argv[]){
    // EasyDriver::EasyDriver drive = new EasyDriver();
 
     //hold vars for menu
-    int top_choice;
+    int choice;
     bool isOn = true;
     double azi, elev;
     string body;
@@ -126,17 +138,17 @@ int main(int argc, char *argv[]){
         //print choice menu
         //and take in choice for top level
         print_top_menu();
-        cin >> top_choice;
+        cin >> choice;
 
-        switch(top_choice){
+        switch(choice){
             case 0:
                 cout << "Thank you for using this product!" << endl;
                 isOn  = false;
                 break;
             case 1:
                 print_body_menu();
-                
-                future_pos = get_body("testData");
+                cin >> choice;
+                future_pos = select_body(choice);
                 print_elev_azi_vector(future_pos);
                 break;
             case 2:
@@ -151,6 +163,5 @@ int main(int argc, char *argv[]){
         }
 
     }
-
     return 0;
 }
