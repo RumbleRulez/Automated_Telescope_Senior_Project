@@ -7,8 +7,9 @@
 #include <sstream>
 using namespace std;
 
-vector<double> get_body(string body_name){
-    vector<double> data;
+vector<vector<double>> get_body(string body_name){
+    vector<vector<double>> data;
+    vector<double> alt_hold;
     //file stream var
     ifstream file;
     //open file
@@ -30,8 +31,10 @@ vector<double> get_body(string body_name){
         //while there is a delimiter then grab next one and shove it
         //into vector
         while(getline(sent, word,',')){
-            data.push_back(stod(word));
+            alt_hold.push_back(stod(word));
         }
+        data.push_back(alt_hold);
+        alt_hold.clear();
     }
 
     //close file
@@ -41,13 +44,12 @@ vector<double> get_body(string body_name){
 
 }
 //print vector
-void print_elev_azi_vector(vector<double> v){    
+void print_elev_azi_vector(vector<vector<double>> v){    
     for(int i = 0; i < v.size(); i++){
-        if(i%2 == 0){
-            cout << v[i] << ", ";
-        }else{
-            cout << v[i] << endl;
+        for(int j = 0; j < v[i].size(); j++){
+            cout << v[i][j] << " ";
         }
+        cout << endl;
     }
     return;
 }   
@@ -67,7 +69,7 @@ void print_body_menu(){
     return;
 }
 
-// double get_change_pos(vector<double> future, vector<double> current){
+// double get_change_pos(vector<double> future, vector<double> current, int time_index){
 //     return ;
 // }
 
@@ -91,7 +93,7 @@ int main(int argc, char *argv[]){
     double azi, elev;
     string body;
 
-    vector<double> future_pos;
+    vector<vector<double>> future_pos;
 
     //declare sys start
     cout << "System Initialized" << endl;
