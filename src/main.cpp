@@ -3,7 +3,7 @@
 
 //keep this uncommented when not compiling on BBB
 //calls unix and microcontroller libraries that windows hates
-#include <~/repos/Automated_Telescope_Senior_Project/src EasyDriver.h>
+#include "~/repos/Automated_Telescope_Senior_Project/src EasyDriver.h"
 
 #include <fstream>
 #include <vector>
