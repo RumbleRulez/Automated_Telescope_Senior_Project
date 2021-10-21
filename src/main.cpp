@@ -30,6 +30,7 @@ vector<vector<double>> get_body(string body_name){
 
         //while there is a delimiter then grab next one and shove it
         //into vector
+        //#####Azimuth is i dimensions and Elevation is j dimension
         while(getline(sent, word,',')){
             alt_hold.push_back(stod(word));
         }
@@ -69,12 +70,30 @@ void print_body_menu(){
     return;
 }
 
-// double get_change_pos(vector<double> future, vector<double> current, int time_index){
-//     return ;
+vector<vector<double>> select_body(int in, vector<vector<double>> v){
+    switch(in){
+        case 0:
+            return get_body("Moon");
+            break;
+        case 1:
+            return get_body("Mars");
+            break;
+        default:
+            cout << "Not a valid choice" << endl;
+            break;
+    }
+}
+
+// vector<vector<double>> getIMU(){
+
 // }
 
-//void change_elev(){
+// double get_change_pos(vector<double> future, vector<double> current, int time_index){
+//     
+// }
 
+//void change_elev(vector<vector<double>> data, int time, ){
+//
 //}
 
 //void change_azi(){
@@ -94,9 +113,12 @@ int main(int argc, char *argv[]){
     string body;
 
     vector<vector<double>> future_pos;
+    vector<vector<double>> current_pos;
 
     //declare sys start
     cout << "System Initialized" << endl;
+    //get IMU data
+    //get_IMU();
 
     //loop to keep alive
     while(isOn == true){
@@ -113,6 +135,7 @@ int main(int argc, char *argv[]){
                 break;
             case 1:
                 print_body_menu();
+                
                 future_pos = get_body("testData");
                 print_elev_azi_vector(future_pos);
                 break;
