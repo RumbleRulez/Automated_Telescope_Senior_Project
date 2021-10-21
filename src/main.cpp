@@ -39,6 +39,7 @@ vector<vector<double>> get_body(string body_name){
         while(getline(sent, word,',')){
             alt_hold.push_back(stod(word));
         }
+        //push new vector in and then clear the hold vector
         data.push_back(alt_hold);
         alt_hold.clear();
     }
@@ -70,12 +71,14 @@ void print_top_menu(){
 
     return;
 }
+
 //print menu for celestial body
 void print_body_menu(){
     cout << "0.Earth's moon" << endl;
     cout << "1.Mars" << endl;
     return;
 }
+
 //body selection from submenu
 vector<vector<double>> select_body(int in){
     switch(in){
@@ -91,28 +94,29 @@ vector<vector<double>> select_body(int in){
     }
 }
 
+//function to get IMU initial data
 // vector<vector<double>> getIMU(){
 
 // }
 
+//function to get change in current position to future position
 vector<double> get_change_pos(vector<vector<double>> future, vector<double> current, int time_index){
     vector<double> delta;
      
-     delta[0] = future[time_index][0] - current[0];
-     delta[1] = future[time_index][1] - current[1];
+     delta.push_back(future[time_index][0] - current[0]);
+     delta.push_back(future[time_index][1] - current[1]);
 
      return delta;
 }
 
-//void change_elev(vector<vector<double>> data, int time, ){
+//void change_pos(vector<vector<double>> data){
 //
 //}
 
-//void change_azi(){
-
-//}
 
 //bool is_danger(){}
+
+//void track(){}
 
 int main(int argc, char *argv[]){
    // NEED PINS FOR EASYDRIVER
@@ -125,8 +129,8 @@ int main(int argc, char *argv[]){
     string body;
 
     vector<vector<double>> future_pos;
-    vector<vector<double>> current_pos;
-
+    vector<double> current_pos;
+    vector<double> delta_pos;
     //declare sys start
     cout << "System Initialized" << endl;
     //get IMU data
@@ -156,6 +160,17 @@ int main(int argc, char *argv[]){
                 cin >> elev;
                 cout << "Please input new azimuth in degrees:" << endl;
                 cin >> azi;
+                break;
+            case 3:
+                future_pos = get_body("testData");
+                cout << "Data aquired" << endl;
+                current_pos.push_back(1000);
+                current_pos.push_back(2000);
+                cout << "current pos initalized" << endl;
+                delta_pos = get_change_pos(future_pos, current_pos, 0);
+                print_elev_azi_vector(future_pos);
+                cout << "delta calculated" << endl;
+                cout << delta_pos[0] << " " << delta_pos[1] << endl;
                 break;
             default:
                 cout << "Invalid option, please input the number corresponding to the choice" << endl;
