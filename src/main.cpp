@@ -12,10 +12,10 @@
 
 using namespace std;
 
-enum{
+enum motor_choice{
     alt,
     azi
-}motor_choice;
+};
 
 vector<vector<double>> get_body(string body_name){
     vector<vector<double>> data;
@@ -40,7 +40,7 @@ vector<vector<double>> get_body(string body_name){
 
         //while there is a delimiter then grab next one and shove it
         //into vector
-        //Azimuth is j dimensions and Elevation is i dimension
+        //Azimuth is 1 dimensions and Elevation is 0 dimension == elev,azi
         while(getline(sent, word,',')){
             alt_hold.push_back(stod(word));
         }
@@ -77,8 +77,9 @@ void print_top_menu(){
     return;
 }
 
+// >80 degrees danger detection
 bool is_danger(vector<vector<double>> future_pos, int time){
-    if(future_pos[0][time] > 80.0){
+    if(future_pos[time][0] > 80.0){
         return true;
     }else{
         return false;
@@ -109,7 +110,6 @@ vector<vector<double>> select_body(int in){
 
 //function to get IMU initial data
 // vector<double> getIMU(){
-
 // }
 
 //function to get change in current position to future position
@@ -122,46 +122,42 @@ vector<double> get_change_pos(vector<vector<double>> future, vector<double> curr
         return delta;
     }else{
         cout << "Danger Zone Detected: Sleeping for " << time_index << "ms" << endl;
-        delta.push_back(0);
-        delta.push_back(0);
+        delta.push_back(0.0);
+        delta.push_back(0.0);
         return delta;
     }
 }
 
 void change_pos(EasyDriver &driver, int time,vector<vector<double>> future, vector<double> current)
 {   
-    
-    driver.rotate(future[0][time]);
-    cout << "Rotating " << future[0][time] <<endl;
-
-    return;    
+        driver.rotate(future[time][0]);
+        cout << "Rotating " << future[time][0] <<endl;
+        return;  
 }
-
-//void track(){}
 
 int main(int argc, char *argv[]){
     /*   
         Pins for BBB. P8 is the header and the number is the pin # located on the beaglebone pinout guide
 
         Alt/Elevation driver:
-            MS1 = P8_8
-            MS2 = P8_10
-            STEP = P8_12
-            SLP = P8_14
-            DIR = P8_16
+            MS1 = P8_8 = GPIO 67
+            MS2 = P8_10 = GPIO 68 
+            STEP = P8_12 = GPIO 44
+            SLP = P8_14 = GPIO 26
+            DIR = P8_16 = GPIO 46
 
         Azi driver:
-            MS1 = P8_18
-            MS2 = P8_17
-            STEP = P8_15
-            SLP = P8_11
-            DIR = P8_9
+            MS1 = P8_18 = GPIO 65
+            MS2 = P8_17 = GPIO 27
+            STEP = P8_15 = GPIO 47
+            SLP = P8_11 = GPIO 45
+            DIR = P8_9 = GPIO 69
 
    */
     EasyDriver ALT_drive(67,68,44,26,46,1,360);
-    cout << "ALT Driver Initlized" << endl;
+    cout << "ALT Driver Initialized" << endl;
     EasyDriver AZI_drive(65,27,47,45,69,1,360);
-    cout << "AZI Driver Initlized" << endl;
+    cout << "AZI Driver Initialized" << endl;
 
     //hold vars for menu
     int choice;
@@ -169,12 +165,16 @@ int main(int argc, char *argv[]){
     double azi, elev;
     string body;
 
+    //vectors for position trackings
     vector<vector<double>> future_pos;
     vector<double> current_pos;
     vector<double> delta_pos;
-    vector<double> input_angle;
+    vector<double> hold;
+    vector<vector<double>> input_angle;
+    
     //declare sys start
     cout << "System Initialized" << endl;
+    
     //get IMU data
     //get_IMU();
 
@@ -204,10 +204,11 @@ int main(int argc, char *argv[]){
                 cin >> azi;
                 current_pos.push_back(0);
                 current_pos.push_back(0);
-                input_angle.push_back(elev);
-                input_angle.push_back(azi);
-                delta_pos = get_change_pos(future_pos,current_pos, 0);
-                cout << delta_pos[0] << delta_pos[1];
+                hold.push_back(elev);
+                hold.push_back(azi);
+                input_angle.push_back(hold);
+                delta_pos = get_change_pos(input_angle,current_pos, 0);
+                cout << delta_pos.at(0) << " " << delta_pos.at(1);
                 break;
             case 3:
                 future_pos = get_body("testData");
