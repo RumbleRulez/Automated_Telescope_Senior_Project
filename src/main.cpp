@@ -77,6 +77,14 @@ void print_top_menu(){
     return;
 }
 
+bool is_danger(vector<vector<double>> future_pos, int time){
+    if(future_pos[0][time] > 80.0){
+        return true;
+    }else{
+        return false;
+    }
+}
+
 //print menu for celestial body
 void print_body_menu(){
     cout << "0.Earth's moon" << endl;
@@ -127,15 +135,6 @@ void change_pos(EasyDriver &driver, int time,vector<vector<double>> future, vect
     cout << "Rotating " << future[0][time] <<endl;
 
     return;    
-}
-
-
-bool is_danger(vector<vector<double>> future_pos, int time){
-    if(future_pos[0][time] > 80.0){
-        return true;
-    }else{
-        return false;
-    }
 }
 
 //void track(){}
