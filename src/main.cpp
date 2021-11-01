@@ -12,6 +12,11 @@
 
 using namespace std;
 
+enum{
+    alt,
+    azi
+}motor_choice;
+
 vector<vector<double>> get_body(string body_name){
     vector<vector<double>> data;
     vector<double> alt_hold;
@@ -35,7 +40,7 @@ vector<vector<double>> get_body(string body_name){
 
         //while there is a delimiter then grab next one and shove it
         //into vector
-        //#####Azimuth is i dimensions and Elevation is j dimension
+        //Azimuth is j dimensions and Elevation is i dimension
         while(getline(sent, word,',')){
             alt_hold.push_back(stod(word));
         }
@@ -95,32 +100,67 @@ vector<vector<double>> select_body(int in){
 }
 
 //function to get IMU initial data
-// vector<vector<double>> getIMU(){
+// vector<double> getIMU(){
 
 // }
 
 //function to get change in current position to future position
 vector<double> get_change_pos(vector<vector<double>> future, vector<double> current, int time_index){
     vector<double> delta;
-     
-     delta.push_back(future[time_index][0] - current[0]);
-     delta.push_back(future[time_index][1] - current[1]);
+    if(!is_danger(future, time_index)){
+        delta.push_back(future[time_index][0] - current[0]);
+        delta.push_back(future[time_index][1] - current[1]);
 
-     return delta;
+        return delta;
+    }else{
+        cout << "Danger Zone Detected: Sleeping for " << time_index << "ms" << endl;
+        delta.push_back(0);
+        delta.push_back(0);
+        return delta;
+    }
 }
 
-//void change_pos(vector<vector<double>> data){
-//
-//}
+void change_pos(EasyDriver &driver, int time,vector<vector<double>> future, vector<double> current)
+{   
+    
+    driver.rotate(future[0][time]);
+    cout << "Rotating " << future[0][time] <<endl;
+
+    return;    
+}
 
 
-//bool is_danger(){}
+bool is_danger(vector<vector<double>> future_pos, int time){
+    if(future_pos[0][time] > 80.0){
+        return true;
+    }else{
+        return false;
+    }
+}
 
 //void track(){}
 
 int main(int argc, char *argv[]){
-   // NEED PINS FOR EASYDRIVER
-   // EasyDriver::EasyDriver drive = new EasyDriver();
+    /*   
+        Pins for BBB. P8 is the header and the number is the pin # located on the beaglebone pinout guide
+
+        Alt/Elevation driver:
+            MS1 = P8_8
+            MS2 = P8_10
+            STEP = P8_12
+            SLP = P8_14
+            DIR = P8_16
+
+        Azi driver:
+            MS1 = P8_18
+            MS2 = P8_17
+            STEP = P8_15
+            SLP = P8_11
+            DIR = P8_9
+
+   */
+    EasyDriver ALT_drive(8,10,12,14,16,1,360);
+    EasyDriver AZI_drive(8,10,12,14,16,1,360);
 
     //hold vars for menu
     int choice;
@@ -131,6 +171,7 @@ int main(int argc, char *argv[]){
     vector<vector<double>> future_pos;
     vector<double> current_pos;
     vector<double> delta_pos;
+    vector<double> input_angle;
     //declare sys start
     cout << "System Initialized" << endl;
     //get IMU data
@@ -160,6 +201,12 @@ int main(int argc, char *argv[]){
                 cin >> elev;
                 cout << "Please input new azimuth in degrees:" << endl;
                 cin >> azi;
+                current_pos.push_back(0);
+                current_pos.push_back(0);
+                input_angle.push_back(elev);
+                input_angle.push_back(azi);
+                delta_pos = get_change_pos(future_pos,current_pos, 0);
+                cout << delta_pos[0] << delta_pos[1];
                 break;
             case 3:
                 future_pos = get_body("testData");
