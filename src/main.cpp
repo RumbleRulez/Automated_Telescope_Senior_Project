@@ -159,7 +159,9 @@ int main(int argc, char *argv[]){
 
    */
     EasyDriver ALT_drive(8,10,12,14,16,1,360);
+    cout << "ALT Driver Initlized" << endl;
     EasyDriver AZI_drive(8,10,12,14,16,1,360);
+    cout << "AZI Driver Initlized" << endl;
 
     //hold vars for menu
     int choice;
