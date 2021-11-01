@@ -247,6 +247,7 @@ int main(int argc, char *argv[]){
                 cout << "delta calculated" << endl;
                 cout << delta_pos[0] << " " << delta_pos[1] << endl;
                 cout << current_pos[0] << current_pos[1] << endl;
+                cout << readADC(0);
                 break;
             default:
                 cout << "Invalid option, please input the number corresponding to the choice" << endl;

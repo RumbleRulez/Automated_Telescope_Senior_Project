@@ -243,7 +243,7 @@ int gpio_omap_mux_setup(const char *omap_pin0_name, const char *mode)
       
       //Create the file path by concatenating the ADC pin number to the end of the string  
       //Stores the file path name string into "buf"  
-      snprintf(buf, sizeof(buf), "/sys/devices/ocp.2/helper.14/AIN%d", pin);     //Concatenate ADC file name  
+      snprintf(buf, sizeof(buf), "/sys/bus/iio/devices/iio:device0/in_voltage%d_raw", pin);     //Concatenate ADC file name  
       
       fd = open(buf, O_RDONLY);     //open ADC as read only  
       
