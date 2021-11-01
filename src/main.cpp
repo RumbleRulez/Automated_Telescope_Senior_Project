@@ -13,8 +13,8 @@
 using namespace std;
 
 enum motor_choice{
-    alt,
-    azi
+    ALT,
+    AZI
 };
 
 vector<vector<double>> get_body(string body_name){
@@ -109,8 +109,12 @@ vector<vector<double>> select_body(int in){
 }
 
 //function to get IMU initial data
-// vector<double> getIMU(){
-// }
+vector<double> getIMU(){
+    double alt, azi;
+    
+
+
+}
 
 //function to get change in current position to future position
 vector<double> get_change_pos(vector<vector<double>> future, vector<double> current, int time_index){
@@ -128,11 +132,28 @@ vector<double> get_change_pos(vector<vector<double>> future, vector<double> curr
     }
 }
 
-void change_pos(EasyDriver &driver, int time,vector<vector<double>> future, vector<double> current)
+void change_pos(EasyDriver &driver, int time,vector<vector<double>> future, vector<double> &current, motor_choice motor)
 {   
-        driver.rotate(future[time][0]);
-        cout << "Rotating " << future[time][0] <<endl;
+    vector<double> hold;    
+    hold = get_change_pos(future, current, time);
+
+    if(hold[0] && hold[1])
+        return;
+
+    if(motor == 0){
+        driver.rotate(hold[0]);
+        current[0] += hold[0]; 
+        current[1] += hold[1];
+        cout << "Rotating " << hold[0] <<endl;
+
         return;  
+    }else{
+        current[0] += hold[0]; 
+        current[1] += hold[1];
+        driver.rotate(hold[1]);
+        cout << "Rotating " << hold[0] <<endl;
+        return;
+    }
 }
 
 int main(int argc, char *argv[]){
@@ -160,7 +181,7 @@ int main(int argc, char *argv[]){
     cout << "AZI Driver Initialized" << endl;
 
     //hold vars for menu
-    int choice;
+    int choice, time = 0;
     bool isOn = true;
     double azi, elev;
     string body;
@@ -207,19 +228,25 @@ int main(int argc, char *argv[]){
                 hold.push_back(elev);
                 hold.push_back(azi);
                 input_angle.push_back(hold);
-                delta_pos = get_change_pos(input_angle,current_pos, 0);
-                cout << delta_pos.at(0) << " " << delta_pos.at(1);
+                // change_pos(ALT_drive, time, future_pos, current_pos, ALT);
+                // change_pos(AZI_drive, time, future_pos, current_pos, AZI);
+
                 break;
             case 3:
                 future_pos = get_body("testData");
                 cout << "Data aquired" << endl;
-                current_pos.push_back(1000);
-                current_pos.push_back(2000);
+                current_pos.push_back(0);
+                current_pos.push_back(0);
                 cout << "current pos initalized" << endl;
                 delta_pos = get_change_pos(future_pos, current_pos, 0);
                 print_elev_azi_vector(future_pos);
                 cout << "delta calculated" << endl;
                 cout << delta_pos[0] << " " << delta_pos[1] << endl;
+                cout << current_pos[0] << current_pos[1] << endl;
+                delta_pos = get_change_pos(future_pos, current_pos, 1);
+                cout << "delta calculated" << endl;
+                cout << delta_pos[0] << " " << delta_pos[1] << endl;
+                cout << current_pos[0] << current_pos[1] << endl;
                 break;
             default:
                 cout << "Invalid option, please input the number corresponding to the choice" << endl;
