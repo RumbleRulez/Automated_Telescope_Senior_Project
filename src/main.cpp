@@ -175,9 +175,9 @@ int main(int argc, char *argv[]){
             DIR = P8_9 = GPIO 69
 
    */
-    EasyDriver ALT_drive(67,68,44,26,46,1,360);
+    EasyDriver ALT_drive(67,68,44,26,46,144,360);
     cout << "ALT Driver Initialized" << endl;
-    EasyDriver AZI_drive(65,27,47,45,69,1,360);
+    EasyDriver AZI_drive(65,27,47,45,69,144,360);
     cout << "AZI Driver Initialized" << endl;
 
     //hold vars for menu
@@ -228,8 +228,8 @@ int main(int argc, char *argv[]){
                 hold.push_back(elev);
                 hold.push_back(azi);
                 input_angle.push_back(hold);
-                // change_pos(ALT_drive, time, future_pos, current_pos, ALT);
-                // change_pos(AZI_drive, time, future_pos, current_pos, AZI);
+                change_pos(ALT_drive, time, future_pos, current_pos, ALT);
+                change_pos(AZI_drive, time, future_pos, current_pos, AZI);
 
                 break;
             case 3:
@@ -246,8 +246,8 @@ int main(int argc, char *argv[]){
                 delta_pos = get_change_pos(future_pos, current_pos, 1);
                 cout << "delta calculated" << endl;
                 cout << delta_pos[0] << " " << delta_pos[1] << endl;
-                cout << current_pos[0] << current_pos[1] << endl;
-                cout << readADC(0);
+                cout << current_pos[0] << " " <<current_pos[1] << endl;
+                cout << "Analog pin 0 value:" << readADC(0) << endl;
                 break;
             default:
                 cout << "Invalid option, please input the number corresponding to the choice" << endl;
