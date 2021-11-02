@@ -119,9 +119,16 @@ vector<double> getIMU(){
 //function to get change in current position to future position
 vector<double> get_change_pos(vector<vector<double>> future, vector<double> current, int time_index){
     vector<double> delta;
+    double hold1, hold2;
     if(!is_danger(future, time_index)){
-        delta.push_back(future[time_index][0] - current[0]);
-        delta.push_back(future[time_index][1] - current[1]);
+        hold1 = future[time_index][0] - current[0];
+        hold2 = future[time_index][1] - current[1];
+        delta.push_back(hold1);
+        delta.push_back(hold2);
+        cout << delta.size() << endl;
+        cout << hold1 << endl;
+        cout << hold2 << endl;
+        cout << "get change works" << endl;
 
         return delta;
     }else{
@@ -228,8 +235,8 @@ int main(int argc, char *argv[]){
                 hold.push_back(elev);
                 hold.push_back(azi);
                 input_angle.push_back(hold);
-                change_pos(ALT_drive, time, future_pos, current_pos, ALT);
-                change_pos(AZI_drive, time, future_pos, current_pos, AZI);
+                change_pos(ALT_drive, time, input_angle, current_pos, ALT);
+                change_pos(AZI_drive, time, input_angle, current_pos, AZI);
 
                 break;
             case 3:
