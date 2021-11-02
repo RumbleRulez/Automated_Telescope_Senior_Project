@@ -235,8 +235,10 @@ int main(int argc, char *argv[]){
                 hold.push_back(elev);
                 hold.push_back(azi);
                 input_angle.push_back(hold);
-                change_pos(ALT_drive, time, input_angle, current_pos, ALT);
-                change_pos(AZI_drive, time, input_angle, current_pos, AZI);
+                ALT_drive.rotate(30);
+                AZI_drive.rotate(30);
+                // change_pos(ALT_drive, time, input_angle, current_pos, ALT);
+                // change_pos(AZI_drive, time, input_angle, current_pos, AZI);
 
                 break;
             case 3:
