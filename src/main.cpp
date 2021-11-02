@@ -182,9 +182,9 @@ int main(int argc, char *argv[]){
             DIR = P8_9 = GPIO 69
 
    */
-    EasyDriver ALT_drive(67,68,44,26,46,144,360);
+    EasyDriver ALT_drive(67,68,44,26,46,144,200);
     cout << "ALT Driver Initialized" << endl;
-    EasyDriver AZI_drive(65,27,47,45,69,144,360);
+    EasyDriver AZI_drive(65,27,47,45,69,144,200);
     cout << "AZI Driver Initialized" << endl;
 
     //hold vars for menu
