@@ -1,7 +1,7 @@
 #include <Wire.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BNO055.h>
-#include <utility/imumaths.h>
+#include <include/imumaths.h>
 #include <EEPROM.h>
 
 /* This driver uses the Adafruit unified sensor library (Adafruit_Sensor),
@@ -148,6 +148,8 @@ void displaySensorOffsets(const adafruit_bno055_offsets_t &calibData)
 ***************************************************************************/
 void setup(void)
 {
+    Serial.begin(9600);
+
     Serial.begin(115200);
     delay(1000);
     Serial.println("Orientation Sensor Test"); Serial.println("");

@@ -1,10 +1,10 @@
 #include <iostream>
 #include <math.h>
-
+#include <Arduino.h>
 //keep this uncommented when not compiling on BBB
 //calls unix and microcontroller libraries that windows hates
-#include "EasyDriver.h"
-
+#include "include/EasyDriver.h"
+#include "include/Adafruit_BNO055.h"
 #include <fstream>
 #include <vector>
 #include <string>
@@ -112,6 +112,8 @@ vector<vector<double>> select_body(int in){
 vector<double> getIMU(){
     double alt, azi;
     
+    //readADC();
+    //readADC();
 
 
 }
@@ -120,7 +122,10 @@ vector<double> getIMU(){
 vector<double> get_change_pos(vector<vector<double>> future, vector<double> current, int time_index){
     vector<double> delta;
     double hold1, hold2;
+    
     if(!is_danger(future, time_index)){
+
+        cout << "Changing position" << endl;
         hold1 = future[time_index][0] - current[0];
         hold2 = future[time_index][1] - current[1];
         delta.push_back(hold1);
@@ -128,7 +133,6 @@ vector<double> get_change_pos(vector<vector<double>> future, vector<double> curr
         cout << delta.size() << endl;
         cout << hold1 << endl;
         cout << hold2 << endl;
-        cout << "get change works" << endl;
 
         return delta;
     }else{
@@ -139,7 +143,7 @@ vector<double> get_change_pos(vector<vector<double>> future, vector<double> curr
     }
 }
 
-void change_pos(EasyDriver &driver, int time,vector<vector<double>> future, vector<double> &current, motor_choice motor)
+void change_pos(EasyDriver &driver, int time, vector<vector<double>> future, vector<double> &current, motor_choice motor)
 {   
     vector<double> hold;    
     hold = get_change_pos(future, current, time);
@@ -180,6 +184,10 @@ int main(int argc, char *argv[]){
             STEP = P8_15 = GPIO 47
             SLP = P8_11 = GPIO 45
             DIR = P8_9 = GPIO 69
+
+        IMU:
+            AIN3 
+            AIN1
 
    */
     EasyDriver ALT_drive(67,68,44,26,46,144,200);
@@ -235,10 +243,10 @@ int main(int argc, char *argv[]){
                 hold.push_back(elev);
                 hold.push_back(azi);
                 input_angle.push_back(hold);
-                ALT_drive.rotate(30);
-                AZI_drive.rotate(30);
-                // change_pos(ALT_drive, time, input_angle, current_pos, ALT);
-                // change_pos(AZI_drive, time, input_angle, current_pos, AZI);
+                // ALT_drive.rotate(30);
+                // AZI_drive.rotate(30);
+                change_pos(ALT_drive, time, input_angle, current_pos, ALT);
+                change_pos(AZI_drive, time, input_angle, current_pos, AZI);
 
                 break;
             case 3:
@@ -255,7 +263,7 @@ int main(int argc, char *argv[]){
                 delta_pos = get_change_pos(future_pos, current_pos, 1);
                 cout << "delta calculated" << endl;
                 cout << delta_pos[0] << " " << delta_pos[1] << endl;
-                cout << current_pos[0] << " " <<current_pos[1] << endl;
+                cout << current_pos[0] << " " << current_pos[1] << endl;
                 cout << "Analog pin 0 value:" << readADC(0) << endl;
                 break;
             default:
