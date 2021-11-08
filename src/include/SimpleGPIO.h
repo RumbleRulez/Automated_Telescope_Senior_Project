@@ -68,5 +68,6 @@ int gpio_set_edge(unsigned int gpio, char *edge);
 int gpio_fd_open(unsigned int gpio);
 int gpio_fd_close(int fd);
 int gpio_omap_mux_setup(const char *omap_pin0_name, const char *mode);
+int readADC(unsigned int pin);
 
 #endif /* SIMPLEGPIO_H_ */

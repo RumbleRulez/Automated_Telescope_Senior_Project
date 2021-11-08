@@ -50,6 +50,7 @@ EasyDriver::EasyDriver(int gpio_MS1, int gpio_MS2, int gpio_STEP, int gpio_SLP,
 	gpio_export(this->gpio_DIR);
 	gpio_set_dir(this->gpio_DIR, OUTPUT_PIN);
 
+	//cout << "GPIO Initialized" << endl;
 	// default to clockwise direction
 	clockwise = true;
 	// default to full stepping
@@ -58,6 +59,8 @@ EasyDriver::EasyDriver(int gpio_MS1, int gpio_MS2, int gpio_STEP, int gpio_SLP,
 	setStepsPerRevolution(stepsPerRevolution);
 	// the default speed in rpm
 	setSpeed(speedRPM);
+
+	//cout << "Parameters Initialized" << endl;
 	//wake up the controller - holding torque..
 	wake();
 }

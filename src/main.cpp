@@ -1,16 +1,21 @@
 #include <iostream>
 #include <math.h>
-
+#include <Arduino.h>
 //keep this uncommented when not compiling on BBB
 //calls unix and microcontroller libraries that windows hates
-#include "EasyDriver.h"
-
+#include "include/EasyDriver.h"
+#include "include/Adafruit_BNO055.h"
 #include <fstream>
 #include <vector>
 #include <string>
 #include <sstream>
 
 using namespace std;
+
+enum motor_choice{
+    ALT,
+    AZI
+};
 
 vector<vector<double>> get_body(string body_name){
     vector<vector<double>> data;
@@ -35,7 +40,7 @@ vector<vector<double>> get_body(string body_name){
 
         //while there is a delimiter then grab next one and shove it
         //into vector
-        //#####Azimuth is i dimensions and Elevation is j dimension
+        //Azimuth is 1 dimensions and Elevation is 0 dimension == elev,azi
         while(getline(sent, word,',')){
             alt_hold.push_back(stod(word));
         }
@@ -72,6 +77,15 @@ void print_top_menu(){
     return;
 }
 
+// >80 degrees danger detection
+bool is_danger(vector<vector<double>> future_pos, int time){
+    if(future_pos[time][0] > 80.0){
+        return true;
+    }else{
+        return false;
+    }
+}
+
 //print menu for celestial body
 void print_body_menu(){
     cout << "0.Earth's moon" << endl;
@@ -95,44 +109,108 @@ vector<vector<double>> select_body(int in){
 }
 
 //function to get IMU initial data
-// vector<vector<double>> getIMU(){
+vector<double> getIMU(){
+    double alt, azi;
+    
+    //readADC();
+    //readADC();
 
-// }
+
+}
 
 //function to get change in current position to future position
 vector<double> get_change_pos(vector<vector<double>> future, vector<double> current, int time_index){
     vector<double> delta;
-     
-     delta.push_back(future[time_index][0] - current[0]);
-     delta.push_back(future[time_index][1] - current[1]);
+    double hold1, hold2;
+    
+    if(!is_danger(future, time_index)){
 
-     return delta;
+        cout << "Changing position" << endl;
+        hold1 = future[time_index][0] - current[0];
+        hold2 = future[time_index][1] - current[1];
+        delta.push_back(hold1);
+        delta.push_back(hold2);
+        cout << delta.size() << endl;
+        cout << hold1 << endl;
+        cout << hold2 << endl;
+
+        return delta;
+    }else{
+        cout << "Danger Zone Detected: Sleeping for " << time_index << "ms" << endl;
+        delta.push_back(0.0);
+        delta.push_back(0.0);
+        return delta;
+    }
 }
 
-//void change_pos(vector<vector<double>> data){
-//
-//}
+void change_pos(EasyDriver &driver, int time, vector<vector<double>> future, vector<double> &current, motor_choice motor)
+{   
+    vector<double> hold;    
+    hold = get_change_pos(future, current, time);
 
+    if(hold[0] && hold[1])
+        return;
 
-//bool is_danger(){}
+    if(motor == 0){
+        driver.rotate(hold[0]);
+        current[0] += hold[0]; 
+        current[1] += hold[1];
+        cout << "Rotating " << hold[0] <<endl;
 
-//void track(){}
+        return;  
+    }else{
+        current[0] += hold[0]; 
+        current[1] += hold[1];
+        driver.rotate(hold[1]);
+        cout << "Rotating " << hold[0] <<endl;
+        return;
+    }
+}
 
 int main(int argc, char *argv[]){
-   // NEED PINS FOR EASYDRIVER
-   // EasyDriver::EasyDriver drive = new EasyDriver();
+    /*   
+        Pins for BBB. P8 is the header and the number is the pin # located on the beaglebone pinout guide
+
+        Alt/Elevation driver:
+            MS1 = P8_8 = GPIO 67
+            MS2 = P8_10 = GPIO 68 
+            STEP = P8_12 = GPIO 44
+            SLP = P8_14 = GPIO 26
+            DIR = P8_16 = GPIO 46
+
+        Azi driver:
+            MS1 = P8_18 = GPIO 65
+            MS2 = P8_17 = GPIO 27
+            STEP = P8_15 = GPIO 47
+            SLP = P8_11 = GPIO 45
+            DIR = P8_9 = GPIO 69
+
+        IMU:
+            AIN3 
+            AIN1
+
+   */
+    EasyDriver ALT_drive(67,68,44,26,46,144,200);
+    cout << "ALT Driver Initialized" << endl;
+    EasyDriver AZI_drive(65,27,47,45,69,144,200);
+    cout << "AZI Driver Initialized" << endl;
 
     //hold vars for menu
-    int choice;
+    int choice, time = 0;
     bool isOn = true;
     double azi, elev;
     string body;
 
+    //vectors for position trackings
     vector<vector<double>> future_pos;
     vector<double> current_pos;
     vector<double> delta_pos;
+    vector<double> hold;
+    vector<vector<double>> input_angle;
+    
     //declare sys start
     cout << "System Initialized" << endl;
+    
     //get IMU data
     //get_IMU();
 
@@ -160,17 +238,33 @@ int main(int argc, char *argv[]){
                 cin >> elev;
                 cout << "Please input new azimuth in degrees:" << endl;
                 cin >> azi;
+                current_pos.push_back(0);
+                current_pos.push_back(0);
+                hold.push_back(elev);
+                hold.push_back(azi);
+                input_angle.push_back(hold);
+                // ALT_drive.rotate(30);
+                // AZI_drive.rotate(30);
+                change_pos(ALT_drive, time, input_angle, current_pos, ALT);
+                change_pos(AZI_drive, time, input_angle, current_pos, AZI);
+
                 break;
             case 3:
                 future_pos = get_body("testData");
                 cout << "Data aquired" << endl;
-                current_pos.push_back(1000);
-                current_pos.push_back(2000);
+                current_pos.push_back(0);
+                current_pos.push_back(0);
                 cout << "current pos initalized" << endl;
                 delta_pos = get_change_pos(future_pos, current_pos, 0);
                 print_elev_azi_vector(future_pos);
                 cout << "delta calculated" << endl;
                 cout << delta_pos[0] << " " << delta_pos[1] << endl;
+                cout << current_pos[0] << current_pos[1] << endl;
+                delta_pos = get_change_pos(future_pos, current_pos, 1);
+                cout << "delta calculated" << endl;
+                cout << delta_pos[0] << " " << delta_pos[1] << endl;
+                cout << current_pos[0] << " " << current_pos[1] << endl;
+                cout << "Analog pin 0 value:" << readADC(0) << endl;
                 break;
             default:
                 cout << "Invalid option, please input the number corresponding to the choice" << endl;
