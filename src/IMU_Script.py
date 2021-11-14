@@ -17,6 +17,12 @@ def writeData():
     row = []
 
     row.append(sensor.euler)
+    
+    del row[15]
+    del row[16]
+
+    del row[0]
+    del row[1]
 
     with open(filename, 'w' ) as csvfile:
         csvwriter = csv.writer(csvfile)
