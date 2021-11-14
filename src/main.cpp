@@ -52,7 +52,6 @@ vector<vector<double>> get_body(string body_name){
     file.close();
 
     return data;
-
 }
 
 //print vector
@@ -121,14 +120,14 @@ vector<double> get_change_pos(vector<vector<double>> future, vector<vector<doubl
     
     if(!is_danger(future, time_index)){
 
-        cout << "Changing position" << endl;
+        cout << "Calculating change in position" << endl;
         hold1 = future[time_index][0] - current[0][0];
         hold2 = future[time_index][1] - current[0][1];
         delta.push_back(hold1);
         delta.push_back(hold2);
-        cout << delta.size() << endl;
-        cout << hold1 << endl;
-        cout << hold2 << endl;
+        // cout << delta.size() << endl;
+        // cout << hold1 << endl;
+        // cout << hold2 << endl;
 
         return delta;
     }else{
@@ -162,6 +161,12 @@ void change_pos(EasyDriver &driver, int time, vector<vector<double>> future, vec
         cout << "Rotating " << hold[0] <<endl;
         return;
     }
+}
+
+//sleep
+void sleep(int sleep_amt, int &time){
+    time += sleep_amt;
+    rc_usleep(sleep_amt);
 }
 
 int main(int argc, char *argv[]){
@@ -199,6 +204,7 @@ int main(int argc, char *argv[]){
     bool isOn = true;
     double azi, elev;
     string body;
+    int uTime = 0;
 
     //vectors for position trackings
     vector<vector<double>> future_pos;
@@ -224,6 +230,7 @@ int main(int argc, char *argv[]){
 
         switch(choice){
             case 0:
+                sleep(10000000, uTime);
                 cout << "Thank you for using this product!" << endl;
                 isOn  = false;
                 break;
@@ -243,7 +250,8 @@ int main(int argc, char *argv[]){
                 input_angle.push_back(hold);
                 change_pos(ALT_drive, time, input_angle, current_pos, ALT);
                 change_pos(AZI_drive, time, input_angle, current_pos, AZI);
-
+                print_elev_azi_vector(current_pos);
+                
                 break;
             // case 3:
             //     print_elev_azi_vector();
