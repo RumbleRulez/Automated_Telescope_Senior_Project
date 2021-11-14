@@ -17,12 +17,14 @@ def writeData():
     row = []
 
     row.append(sensor.euler)
-    
-    del row[16]
-    del row[15]
 
-    del row[1]
-    del row[0]
+    #row.pop(16)
+    #row.pop(15)
+    #row.pop(1)
+    #row.pop(0)
+
+    print(len(row))
+    print(type(row))
 
     with open(filename, 'w' ) as csvfile:
         csvwriter = csv.writer(csvfile)
