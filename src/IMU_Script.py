@@ -14,17 +14,6 @@ print("Writing Data...")
 
 def writeData():
     filename = "IMU_Data.csv"
-    row = []
-
-    row.append(sensor.euler)
-
-    #row.pop(15)
-    #row.pop(14)
-    #row.pop(1)
-    #row.pop(0)
-
-    print(len(row))
-    print(type(row))
 
     with open(filename, 'w' ) as csvfile:
         csvwriter = csv.writer(csvfile)
