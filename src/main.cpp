@@ -111,7 +111,7 @@ vector<vector<double>> select_body(int in){
 vector<vector<double>> getIMU(){
     system("./start_IMU.sh");
     
-    return get_body("IMU_Data.csv");
+    return get_body("IMU_Data");
 }
 
 //function to get change in current position to future position
