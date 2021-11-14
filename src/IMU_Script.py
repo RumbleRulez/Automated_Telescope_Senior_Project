@@ -15,13 +15,8 @@ def writeData():
     row = []
 
     row.append(sensor.euler)
-    
+
     with open(filename, 'w' ) as csvfile:
         csvwriter = csv.writer(csvfile)
         csvwriter.writerow(row)
-
-
-
-
-
-
+        print(sensor.euler)
