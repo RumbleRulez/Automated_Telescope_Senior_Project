@@ -17,7 +17,7 @@ def writeData():
 
     with open(filename, 'w' ) as csvfile:
         csvwriter = csv.writer(csvfile)
-        wait(1)
+        time.sleep(1)
         csvwriter.writerow(sensor.euler)
         print(sensor.euler)
 
