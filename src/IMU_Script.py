@@ -18,10 +18,10 @@ def writeData():
 
     row.append(sensor.euler)
 
-    #row.pop(16)
-    #row.pop(15)
-    #row.pop(1)
-    #row.pop(0)
+    row.pop(16)
+    row.pop(15)
+    row.pop(1)
+    row.pop(0)
 
     print(len(row))
     print(type(row))
