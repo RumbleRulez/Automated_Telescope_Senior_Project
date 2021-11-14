@@ -1,10 +1,10 @@
 #include <iostream>
 #include <math.h>
-#include <Arduino.h>
+
 //keep this uncommented when not compiling on BBB
 //calls unix and microcontroller libraries that windows hates
 #include "include/EasyDriver.h"
-#include "include/Adafruit_BNO055.h"
+//#include "include/Adafruit_BNO055.h"
 #include <fstream>
 #include <vector>
 #include <string>
@@ -110,11 +110,6 @@ vector<vector<double>> select_body(int in){
 
 //function to get IMU initial data
 vector<double> getIMU(){
-    double alt, azi;
-    
-    //readADC();
-    //readADC();
-
 
 }
 
@@ -186,8 +181,9 @@ int main(int argc, char *argv[]){
             DIR = P8_9 = GPIO 69
 
         IMU:
-            AIN3 
-            AIN1
+            SCL = P8_
+            SDA = P8_
+            RST =  P8_12
 
    */
     EasyDriver ALT_drive(67,68,44,26,46,144,200);
@@ -243,8 +239,6 @@ int main(int argc, char *argv[]){
                 hold.push_back(elev);
                 hold.push_back(azi);
                 input_angle.push_back(hold);
-                // ALT_drive.rotate(30);
-                // AZI_drive.rotate(30);
                 change_pos(ALT_drive, time, input_angle, current_pos, ALT);
                 change_pos(AZI_drive, time, input_angle, current_pos, AZI);
 
