@@ -28,7 +28,7 @@ def writeData():
 
     with open(filename, 'w' ) as csvfile:
         csvwriter = csv.writer(csvfile)
-        csvwriter.writerow(row)
+        csvwriter.writerow(sensor.euler)
         print(sensor.euler)
 
 writeData()
