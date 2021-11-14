@@ -163,10 +163,11 @@ void change_pos(EasyDriver &driver, int time, vector<vector<double>> future, vec
     }
 }
 
-//sleep
-void sleep(int sleep_amt, int &time){
-    time += sleep_amt;
-    rc_usleep(sleep_amt);
+//sleep for 1 sec
+void sleep(int &time){
+    system("./sleep.sh");
+    time++;
+    return;
 }
 
 int main(int argc, char *argv[]){
@@ -230,7 +231,7 @@ int main(int argc, char *argv[]){
 
         switch(choice){
             case 0:
-                sleep(10000000, uTime);
+                sleep(uTime);
                 cout << "Thank you for using this product!" << endl;
                 isOn  = false;
                 break;
