@@ -1,10 +1,9 @@
 #include <iostream>
 #include <math.h>
-
 //keep this uncommented when not compiling on BBB
 //calls unix and microcontroller libraries that windows hates
 #include "include/EasyDriver.h"
-//#include "include/Adafruit_BNO055.h"
+#include <Python.h>
 #include <fstream>
 #include <vector>
 #include <string>
@@ -109,8 +108,13 @@ vector<vector<double>> select_body(int in){
 }
 
 //function to get IMU initial data
-vector<double> getIMU(){
+void getIMU(){
+    Py_Initialize();
 
+    PyRun_SimpleString("IMU Test");
+
+    Py_FinalizeEx();
+    return;
 }
 
 //function to get change in current position to future position
@@ -138,6 +142,7 @@ vector<double> get_change_pos(vector<vector<double>> future, vector<double> curr
     }
 }
 
+//change position function
 void change_pos(EasyDriver &driver, int time, vector<vector<double>> future, vector<double> &current, motor_choice motor)
 {   
     vector<double> hold;    
@@ -181,11 +186,12 @@ int main(int argc, char *argv[]){
             DIR = P8_9 = GPIO 69
 
         IMU:
-            SCL = P8_
-            SDA = P8_
+            SCL = P8_19
+            SDA = P8_20
             RST =  P8_12
 
    */
+    //Easydriver objects
     EasyDriver ALT_drive(67,68,44,26,46,144,200);
     cout << "ALT Driver Initialized" << endl;
     EasyDriver AZI_drive(65,27,47,45,69,144,200);
@@ -208,7 +214,7 @@ int main(int argc, char *argv[]){
     cout << "System Initialized" << endl;
     
     //get IMU data
-    //get_IMU();
+    get_IMU();
 
     //loop to keep alive
     while(isOn == true){
