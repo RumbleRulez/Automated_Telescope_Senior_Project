@@ -1,4 +1,5 @@
 import csv
+from os import write
 import time
 import board
 import adafruit_bno055
@@ -6,6 +7,7 @@ import adafruit_bno055
 
 i2c = board.I2C()
 sensor = adafruit_bno055.BNO055_I2C(i2c)
+
 
 
 print("Writing Data...")
@@ -20,3 +22,5 @@ def writeData():
         csvwriter = csv.writer(csvfile)
         csvwriter.writerow(row)
         print(sensor.euler)
+
+writeData()
