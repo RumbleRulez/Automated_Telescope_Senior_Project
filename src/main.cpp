@@ -2,7 +2,7 @@
 #include <math.h>
 //keep this uncommented when not compiling on BBB
 //calls unix and microcontroller libraries that windows hates
-#include "include/EasyDriver.h"
+#include "EasyDriver.h"
 #include <fstream>
 #include <vector>
 #include <string>
