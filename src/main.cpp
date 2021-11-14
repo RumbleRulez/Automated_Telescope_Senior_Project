@@ -8,6 +8,7 @@
 #include <string>
 #include <sstream>
 #include <stdlib.h>
+#include <ctime>
 
 using namespace std;
 
@@ -77,7 +78,7 @@ void print_top_menu(){
 
 // >80 degrees danger detection
 bool is_danger(vector<vector<double>> future_pos, int time){
-    if(future_pos[time][0] > 80.0){
+    if(future_pos[0][time] > 80.0){
         return true;
     }else{
         return false;
@@ -170,6 +171,7 @@ void sleep(int &time){
     return;
 }
 
+
 int main(int argc, char *argv[]){
     /*   
         Pins for BBB. P8 is the header and the number is the pin # located on the beaglebone pinout guide
@@ -201,11 +203,12 @@ int main(int argc, char *argv[]){
     cout << "AZI Driver Initialized" << endl;
 
     //hold vars for menu
-    int choice, time = 0;
+    int choice;
     bool isOn = true;
     double azi, elev;
     string body;
-    int uTime = 0;
+
+    time_t time;
 
     //vectors for position trackings
     vector<vector<double>> future_pos;
@@ -231,7 +234,6 @@ int main(int argc, char *argv[]){
 
         switch(choice){
             case 0:
-                sleep(uTime);
                 cout << "Thank you for using this product!" << endl;
                 isOn  = false;
                 break;
@@ -252,7 +254,7 @@ int main(int argc, char *argv[]){
                 change_pos(ALT_drive, time, input_angle, current_pos, ALT);
                 change_pos(AZI_drive, time, input_angle, current_pos, AZI);
                 print_elev_azi_vector(current_pos);
-                
+                cout << difftime(time, 0) << endl;
                 break;
             // case 3:
             //     print_elev_azi_vector();
