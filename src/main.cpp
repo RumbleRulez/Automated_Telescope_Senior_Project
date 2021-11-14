@@ -109,6 +109,7 @@ vector<vector<double>> select_body(int in){
 //function to get IMU initial data
 vector<vector<double>> getIMU(){
     system("start_IMU.sh");
+    
     return get_body("IMU_Data.csv");
 }
 
@@ -209,7 +210,8 @@ int main(int argc, char *argv[]){
     cout << "System Initialized" << endl;
     
     //get IMU data
-    getIMU();
+    cout << "IMU Initialized" << endl;
+    current_pos = getIMU();
 
     //loop to keep alive
     while(isOn == true){
@@ -235,8 +237,6 @@ int main(int argc, char *argv[]){
                 cin >> elev;
                 cout << "Please input new azimuth in degrees:" << endl;
                 cin >> azi;
-                // current_pos.push_back(0);
-                // current_pos.push_back(0);
                 hold.push_back(elev);
                 hold.push_back(azi);
                 input_angle.push_back(hold);
