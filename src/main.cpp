@@ -108,7 +108,7 @@ vector<vector<double>> select_body(int in){
 
 //function to get IMU initial data
 vector<vector<double>> getIMU(){
-    system("start_IMU.sh");
+    system("~/repos/Automated_Telescope_Senior_Project/src/start_IMU.sh");
     
     return get_body("IMU_Data.csv");
 }
