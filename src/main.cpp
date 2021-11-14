@@ -3,7 +3,7 @@
 //keep this uncommented when not compiling on BBB
 //calls unix and microcontroller libraries that windows hates
 #include "include/EasyDriver.h"
-#include <Python.h>
+//#include <Python.h>
 #include <fstream>
 #include <vector>
 #include <string>
@@ -109,11 +109,12 @@ vector<vector<double>> select_body(int in){
 
 //function to get IMU initial data
 void getIMU(){
-    Py_Initialize();
+    system("start_IMU.sh");
+    // Py_Initialize();
 
-    PyRun_SimpleString("IMU Test");
+    // PyRun_SimpleString("IMU Test");
 
-    Py_FinalizeEx();
+    // Py_FinalizeEx();
     return;
 }
 
