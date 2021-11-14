@@ -144,8 +144,8 @@ void change_pos(EasyDriver &driver, int time, vector<vector<double>> future, vec
     vector<double> hold;    
     hold = get_change_pos(future, current, time);
 
-    if(hold[0] && hold[1])
-        return;
+    // if(hold[0] && hold[1])
+    //     return;
 
     if(motor == 0){
         driver.rotate(hold[0]);
