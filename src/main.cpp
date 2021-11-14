@@ -211,8 +211,8 @@ int main(int argc, char *argv[]){
     cout << "System Initialized" << endl;
     
     //get IMU data
-    cout << "IMU Initialized" << endl;
     current_pos = getIMU();
+    cout << "IMU Initialized" << endl;
 
     //loop to keep alive
     while(isOn == true){
