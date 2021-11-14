@@ -255,7 +255,7 @@ int main(int argc, char *argv[]){
                 change_pos(ALT_drive, time, input_angle, current_pos, ALT);
                 change_pos(AZI_drive, time, input_angle, current_pos, AZI);
                 print_elev_azi_vector(current_pos);
-                cout << difftime(time, mktime(&test)) << endl;
+                //cout << difftime(time, mktime(&test)) << endl;
                 break;
             // case 3:
             //     print_elev_azi_vector();
