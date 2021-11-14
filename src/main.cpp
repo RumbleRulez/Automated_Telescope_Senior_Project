@@ -7,6 +7,7 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#include <stdlib.h>
 
 using namespace std;
 
@@ -108,7 +109,7 @@ vector<vector<double>> select_body(int in){
 
 //function to get IMU initial data
 vector<vector<double>> getIMU(){
-    system("~/repos/Automated_Telescope_Senior_Project/src/start_IMU.sh");
+    system("/bin/sh /usr/local/bin/start_IMU.sh");
     
     return get_body("IMU_Data.csv");
 }
