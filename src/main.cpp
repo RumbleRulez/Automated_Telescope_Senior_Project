@@ -78,7 +78,7 @@ void print_top_menu(){
 
 // >80 degrees danger detection
 bool is_danger(vector<vector<double>> future_pos, int time){
-    if(future_pos[0][time] > 80.0){
+    if(future_pos[0][time] > 80){
         return true;
     }else{
         return false;
@@ -119,8 +119,15 @@ vector<double> get_change_pos(vector<vector<double>> future, vector<vector<doubl
     vector<double> delta;
     double hold1, hold2;
     
-    if(!is_danger(future, time_index)){
+    if(is_danger(future, time_index)){
 
+
+        cout << "Danger Zone Detected: Sleeping for " << time_index << "ms" << endl;
+        delta.push_back(0.0);
+        delta.push_back(0.0);
+        return delta;
+        return delta;
+    }else{
         cout << "Calculating change in position" << endl;
         hold1 = future[time_index][0] - current[0][0];
         hold2 = future[time_index][1] - current[0][1];
@@ -129,13 +136,6 @@ vector<double> get_change_pos(vector<vector<double>> future, vector<vector<doubl
         // cout << delta.size() << endl;
         // cout << hold1 << endl;
         // cout << hold2 << endl;
-
-        return delta;
-    }else{
-        cout << "Danger Zone Detected: Sleeping for " << time_index << "ms" << endl;
-        delta.push_back(0.0);
-        delta.push_back(0.0);
-        return delta;
     }
 }
 
@@ -252,6 +252,7 @@ int main(int argc, char *argv[]){
                 hold.push_back(elev);
                 hold.push_back(azi);
                 input_angle.push_back(hold);
+                ALT_drive.rotate(get_change_pos(future_pos,current_pos,time));
                 change_pos(ALT_drive, time, input_angle, current_pos, ALT);
                 change_pos(AZI_drive, time, input_angle, current_pos, AZI);
                 print_elev_azi_vector(current_pos);
