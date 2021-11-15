@@ -252,9 +252,11 @@ int main(int argc, char *argv[]){
                 hold.push_back(elev);
                 hold.push_back(azi);
                 input_angle.push_back(hold);
-                ALT_drive.rotate(get_change_pos(future_pos,current_pos,time));
-                change_pos(ALT_drive, time, input_angle, current_pos, ALT);
-                change_pos(AZI_drive, time, input_angle, current_pos, AZI);
+                delta_pos = get_change_pos(future_pos,current_pos,time);
+                ALT_drive.rotate(delta_pos[0]);
+                AZI_drive.rotate(delta_pos[1]);
+                // change_pos(ALT_drive, time, input_angle, current_pos, ALT);
+                // change_pos(AZI_drive, time, input_angle, current_pos, AZI);
                 print_elev_azi_vector(current_pos);
                 //cout << difftime(time, mktime(&test)) << endl;
                 break;
