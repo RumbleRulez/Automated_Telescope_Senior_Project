@@ -1,14 +1,14 @@
 #include <iostream>
 #include <math.h>
-#include <Arduino.h>
 //keep this uncommented when not compiling on BBB
 //calls unix and microcontroller libraries that windows hates
-#include "include/EasyDriver.h"
-#include "include/Adafruit_BNO055.h"
+#include "EasyDriver.h"
 #include <fstream>
 #include <vector>
 #include <string>
 #include <sstream>
+#include <stdlib.h>
+#include <ctime>
 
 using namespace std;
 
@@ -53,7 +53,6 @@ vector<vector<double>> get_body(string body_name){
     file.close();
 
     return data;
-
 }
 
 //print vector
@@ -79,7 +78,7 @@ void print_top_menu(){
 
 // >80 degrees danger detection
 bool is_danger(vector<vector<double>> future_pos, int time){
-    if(future_pos[time][0] > 80.0){
+    if(future_pos[0][time] > 80){
         return true;
     }else{
         return false;
@@ -109,63 +108,69 @@ vector<vector<double>> select_body(int in){
 }
 
 //function to get IMU initial data
-vector<double> getIMU(){
-    double alt, azi;
+vector<vector<double>> getIMU(){
+    system("./start_IMU.sh");
     
-    //readADC();
-    //readADC();
-
-
+    return get_body("IMU_Data");
 }
 
 //function to get change in current position to future position
-vector<double> get_change_pos(vector<vector<double>> future, vector<double> current, int time_index){
+vector<double> get_change_pos(vector<vector<double>> future, vector<vector<double>> current, int time_index){
     vector<double> delta;
     double hold1, hold2;
     
-    if(!is_danger(future, time_index)){
+    if(is_danger(future, time_index)){
 
-        cout << "Changing position" << endl;
-        hold1 = future[time_index][0] - current[0];
-        hold2 = future[time_index][1] - current[1];
-        delta.push_back(hold1);
-        delta.push_back(hold2);
-        cout << delta.size() << endl;
-        cout << hold1 << endl;
-        cout << hold2 << endl;
 
-        return delta;
-    }else{
         cout << "Danger Zone Detected: Sleeping for " << time_index << "ms" << endl;
         delta.push_back(0.0);
         delta.push_back(0.0);
         return delta;
+        return delta;
+    }else{
+        cout << "Calculating change in position" << endl;
+        hold1 = future[time_index][0] - current[0][0];
+        hold2 = future[time_index][1] - current[0][1];
+        delta.push_back(hold1);
+        delta.push_back(hold2);
+        // cout << delta.size() << endl;
+        // cout << hold1 << endl;
+        // cout << hold2 << endl;
     }
 }
 
-void change_pos(EasyDriver &driver, int time, vector<vector<double>> future, vector<double> &current, motor_choice motor)
+//change position function
+void change_pos(EasyDriver &driver, int time, vector<vector<double>> future, vector<vector<double>> &current, motor_choice motor)
 {   
     vector<double> hold;    
     hold = get_change_pos(future, current, time);
 
-    if(hold[0] && hold[1])
-        return;
+    // if(hold[0] && hold[1])
+    //     return;
 
     if(motor == 0){
         driver.rotate(hold[0]);
-        current[0] += hold[0]; 
-        current[1] += hold[1];
+        current[0][0] += hold[0]; 
+        current[0][1] += hold[1];
         cout << "Rotating " << hold[0] <<endl;
 
         return;  
     }else{
-        current[0] += hold[0]; 
-        current[1] += hold[1];
+        current[0][0] += hold[0]; 
+        current[0][1] += hold[1];
         driver.rotate(hold[1]);
         cout << "Rotating " << hold[0] <<endl;
         return;
     }
 }
+
+//sleep for 1 sec
+void sleep(int &time){
+    system("./sleep.sh");
+    time++;
+    return;
+}
+
 
 int main(int argc, char *argv[]){
     /*   
@@ -186,24 +191,29 @@ int main(int argc, char *argv[]){
             DIR = P8_9 = GPIO 69
 
         IMU:
-            AIN3 
-            AIN1
+            SCL = P8_19
+            SDA = P8_20
+            RST =  P8_12
 
    */
+    //Easydriver objects
     EasyDriver ALT_drive(67,68,44,26,46,144,200);
     cout << "ALT Driver Initialized" << endl;
     EasyDriver AZI_drive(65,27,47,45,69,144,200);
     cout << "AZI Driver Initialized" << endl;
 
     //hold vars for menu
-    int choice, time = 0;
+    int choice;
     bool isOn = true;
     double azi, elev;
     string body;
 
+    time_t time;
+    struct tm test = {0};
+
     //vectors for position trackings
     vector<vector<double>> future_pos;
-    vector<double> current_pos;
+    vector<vector<double>> current_pos;
     vector<double> delta_pos;
     vector<double> hold;
     vector<vector<double>> input_angle;
@@ -212,7 +222,8 @@ int main(int argc, char *argv[]){
     cout << "System Initialized" << endl;
     
     //get IMU data
-    //get_IMU();
+    current_pos = getIMU();
+    cout << "IMU Initialized" << endl;
 
     //loop to keep alive
     while(isOn == true){
@@ -238,34 +249,35 @@ int main(int argc, char *argv[]){
                 cin >> elev;
                 cout << "Please input new azimuth in degrees:" << endl;
                 cin >> azi;
-                current_pos.push_back(0);
-                current_pos.push_back(0);
                 hold.push_back(elev);
                 hold.push_back(azi);
                 input_angle.push_back(hold);
-                // ALT_drive.rotate(30);
-                // AZI_drive.rotate(30);
-                change_pos(ALT_drive, time, input_angle, current_pos, ALT);
-                change_pos(AZI_drive, time, input_angle, current_pos, AZI);
-
+                delta_pos = get_change_pos(future_pos,current_pos,time);
+                ALT_drive.rotate(delta_pos[0]);
+                AZI_drive.rotate(delta_pos[1]);
+                // change_pos(ALT_drive, time, input_angle, current_pos, ALT);
+                // change_pos(AZI_drive, time, input_angle, current_pos, AZI);
+                print_elev_azi_vector(current_pos);
+                //cout << difftime(time, mktime(&test)) << endl;
                 break;
-            case 3:
-                future_pos = get_body("testData");
-                cout << "Data aquired" << endl;
-                current_pos.push_back(0);
-                current_pos.push_back(0);
-                cout << "current pos initalized" << endl;
-                delta_pos = get_change_pos(future_pos, current_pos, 0);
-                print_elev_azi_vector(future_pos);
-                cout << "delta calculated" << endl;
-                cout << delta_pos[0] << " " << delta_pos[1] << endl;
-                cout << current_pos[0] << current_pos[1] << endl;
-                delta_pos = get_change_pos(future_pos, current_pos, 1);
-                cout << "delta calculated" << endl;
-                cout << delta_pos[0] << " " << delta_pos[1] << endl;
-                cout << current_pos[0] << " " << current_pos[1] << endl;
-                cout << "Analog pin 0 value:" << readADC(0) << endl;
-                break;
+            // case 3:
+            //     print_elev_azi_vector();
+            //     future_pos = get_body("testData");
+            //     cout << "Data aquired" << endl;
+            //     current_pos.push_back(0);
+            //     current_pos.push_back(0);
+            //     cout << "current pos initalized" << endl;
+            //     delta_pos = get_change_pos(future_pos, current_pos, 0);
+            //     print_elev_azi_vector(future_pos);
+            //     cout << "delta calculated" << endl;
+            //     cout << delta_pos[0] << " " << delta_pos[1] << endl;
+            //     cout << current_pos[0] << current_pos[1] << endl;
+            //     delta_pos = get_change_pos(future_pos, current_pos, 1);
+            //     cout << "delta calculated" << endl;
+            //     cout << delta_pos[0] << " " << delta_pos[1] << endl;
+            //     cout << current_pos[0] << " " << current_pos[1] << endl;
+            //     cout << "Analog pin 0 value:" << readADC(0) << endl;
+            //     break;
             default:
                 cout << "Invalid option, please input the number corresponding to the choice" << endl;
                 break;
