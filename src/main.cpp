@@ -209,7 +209,7 @@ int main(int argc, char *argv[]){
     cout << "AZI Driver Initialized" << endl;
 
     //hold vars for menu
-    int choice, time;
+    int choice, time = 0;
     bool isOn = true;
     double azi, elev;
     string body;
