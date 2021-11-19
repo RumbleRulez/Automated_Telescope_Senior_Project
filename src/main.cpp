@@ -154,15 +154,17 @@ void change_pos(EasyDriver &driver, int time, vector<vector<double>> future, vec
     if(motor == 0){
         cout << "changing alt" << endl;
         driver.rotate(hold[0]);
-        current[0][0] += hold[0]; 
-        current[0][1] += hold[1];
+        cout << "Hold vector: " << hold[0] << " " << hold[1] << endl;
+        current[0][0] = current[0][0] + hold[0]; 
+        current[0][1] = current[0][1] + hold[1];
         cout << "Rotating " << hold[0] <<endl;
         return;  
     }else{
         cout << "changing azi" << endl;
         driver.rotate(hold[1]);
-        current[0][0] += hold[0]; 
-        current[0][1] += hold[1];
+        cout << "Hold vector: " << hold[0] << " " << hold[1] << endl;
+        current[0][0] = current[0][0] + hold[0]; 
+        current[0][1] = current[0][1] + hold[1];
         cout << "Rotating " << hold[0] <<endl;
         return;
     }
