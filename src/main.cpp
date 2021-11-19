@@ -146,7 +146,7 @@ vector<double> get_change_pos(vector<vector<double>> future, vector<vector<doubl
 }
 
 //change position function
-void change_pos(/*EasyDriver &driver,*/int time, vector<vector<double>> future, vector<vector<double>> &current, motor_choice motor)
+void change_pos(/*EasyDriver &driver,*/int time, vector<vector<double>> future, vector<vector<double>> &current)
 {   
     vector<double> hold;
     cout << "change pos called" << endl;
@@ -155,15 +155,17 @@ void change_pos(/*EasyDriver &driver,*/int time, vector<vector<double>> future, 
     if(hold[0] == hold[1])
         return;
     
-    cout << "changing alt" << endl;
+    cout << "Changing alt" << endl;
     ALT_drive.rotate(hold[0]);
     cout << "Hold vector: " << hold[0] << " " << hold[1] << endl;
     cout << "Rotating " << hold[0] << " degrees" <<endl;
+    
     cout << "Changing azi" << endl;
     AZI_drive.rotate(hold[1]);
     current[0][0] = current[0][0] + hold[0]; 
     current[0][1] = current[0][1] + hold[1];
     cout << "Rotating " << hold[0] << " degrees" << endl;
+    
     return;  
 
 //     if(motor == 0){
@@ -273,8 +275,10 @@ int main(int argc, char *argv[]){
                 // delta_pos = get_change_pos(future_pos,current_pos,time);
                 // ALT_drive.rotate(delta_pos[0]);
                 // AZI_drive.rotate(delta_pos[1]);
-                change_pos(time, input_angle, current_pos, AZI);
+                change_pos(time, input_angle, current_pos);
                 print_elev_azi_vector(current_pos);
+                hold.clear();
+                input_angle.clear();
                 //cout << difftime(time, mktime(&test)) << endl;
                 break;
             case 3:
