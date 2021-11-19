@@ -78,6 +78,7 @@ void print_top_menu(){
 
 // >80 degrees danger detection
 bool is_danger(vector<vector<double>> future_pos, int time){
+    cout << "Verifying danger zone" << endl;
     if(future_pos[time][0] > 80){
         cout << "is_danger future pos: " << future_pos[time][0] << endl;
         return true;
