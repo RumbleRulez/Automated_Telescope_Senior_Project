@@ -142,32 +142,43 @@ vector<double> get_change_pos(vector<vector<double>> future, vector<vector<doubl
 }
 
 //change position function
-void change_pos(EasyDriver &driver, int time, vector<vector<double>> future, vector<vector<double>> &current, motor_choice motor)
+void change_pos(/*EasyDriver &driver,*/int time, vector<vector<double>> future, vector<vector<double>> &current, motor_choice motor)
 {   
     vector<double> hold;
     cout << "change pos called" << endl;
     hold = get_change_pos(future, current, time);
 
-     if(hold[0] == hold[1])
-         return;
-
-    if(motor == 0){
-        cout << "changing alt" << endl;
-        driver.rotate(hold[0]);
-        cout << "Hold vector: " << hold[0] << " " << hold[1] << endl;
-        current[0][0] = current[0][0] + hold[0]; 
-        current[0][1] = current[0][1] + hold[1];
-        cout << "Rotating " << hold[0] <<endl;
-        return;  
-    }else{
-        cout << "changing azi" << endl;
-        driver.rotate(hold[1]);
-        cout << "Hold vector: " << hold[0] << " " << hold[1] << endl;
-        current[0][0] = current[0][0] + hold[0]; 
-        current[0][1] = current[0][1] + hold[1];
-        cout << "Rotating " << hold[0] <<endl;
+    if(hold[0] == hold[1])
         return;
-    }
+    
+    cout << "changing alt" << endl;
+    driver.rotate(hold[0]);
+    cout << "Hold vector: " << hold[0] << " " << hold[1] << endl;
+    cout << "Rotating " << hold[0] << " degrees" <<endl;
+    cout << "Changing azi" << endl;
+    driver.rotate(hold[1]);
+    current[0][0] = current[0][0] + hold[0]; 
+    current[0][1] = current[0][1] + hold[1];
+    cout << "Rotating " << hold[0] << " degrees" << endl;
+    return;  
+
+//     if(motor == 0){
+//         cout << "changing alt" << endl;
+//         driver.rotate(hold[0]);
+//         cout << "Hold vector: " << hold[0] << " " << hold[1] << endl;
+//         current[0][0] = current[0][0] + hold[0]; 
+//         current[0][1] = current[0][1] + hold[1];
+//         cout << "Rotating " << hold[0] <<endl;
+//         return;  
+//     }else{
+//         cout << "changing azi" << endl;
+//         driver.rotate(hold[1]);
+//         cout << "Hold vector: " << hold[0] << " " << hold[1] << endl;
+//         current[0][0] = current[0][0] + hold[0]; 
+//         current[0][1] = current[0][1] + hold[1];
+//         cout << "Rotating " << hold[0] <<endl;
+//         return;
+//     }
 }
 
 //sleep for 1 sec
@@ -177,6 +188,9 @@ void sleep(int &time){
     return;
 }
 
+//Easydriver objects
+EasyDriver ALT_drive(67,68,44,26,46,144,200);
+EasyDriver AZI_drive(65,27,47,45,69,144,200);
 
 int main(int argc, char *argv[]){
     /*   
@@ -202,12 +216,8 @@ int main(int argc, char *argv[]){
             RST =  P8_12
 
    */
-    //Easydriver objects
-    EasyDriver ALT_drive(67,68,44,26,46,144,200);
     cout << "ALT Driver Initialized" << endl;
-    EasyDriver AZI_drive(65,27,47,45,69,144,200);
     cout << "AZI Driver Initialized" << endl;
-
     //hold vars for menu
     int choice, time = 0;
     bool isOn = true;
