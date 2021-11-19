@@ -120,13 +120,15 @@ vector<double> get_change_pos(vector<vector<double>> future, vector<vector<doubl
     vector<double> delta;
     double hold1, hold2;
     
+    cout << "Calculating change in position...in progress" << endl;
+    
     if(is_danger(future, time_index)){
         cout << "Danger Zone Detected: Sleeping for " << time_index << "ms" << endl;
         delta.push_back(0.0);
         delta.push_back(0.0);
         return delta;
     }else{
-        cout << "Calculating change in position" << endl;
+        cout << "Calculated change in position" << endl;
         hold1 = future[time_index][0] - current[0][0];
         hold2 = future[time_index][1] - current[0][1];
         delta.push_back(hold1);
@@ -141,19 +143,22 @@ vector<double> get_change_pos(vector<vector<double>> future, vector<vector<doubl
 //change position function
 void change_pos(EasyDriver &driver, int time, vector<vector<double>> future, vector<vector<double>> &current, motor_choice motor)
 {   
-    vector<double> hold;    
+    vector<double> hold;
+    cout << "change pos called" << endl;
     hold = get_change_pos(future, current, time);
 
      if(hold[0] == hold[1])
          return;
 
     if(motor == 0){
+        cout << "changing alt" << endl;
         driver.rotate(hold[0]);
         current[0][0] += hold[0]; 
         current[0][1] += hold[1];
         cout << "Rotating " << hold[0] <<endl;
         return;  
     }else{
+        cout << "changing azi" << endl;
         driver.rotate(hold[1]);
         current[0][0] += hold[0]; 
         current[0][1] += hold[1];
@@ -250,11 +255,12 @@ int main(int argc, char *argv[]){
                 hold.push_back(elev);
                 hold.push_back(azi);
                 input_angle.push_back(hold);
-                delta_pos = get_change_pos(future_pos,current_pos,time);
-                ALT_drive.rotate(delta_pos[0]);
-                AZI_drive.rotate(delta_pos[1]);
-                // change_pos(ALT_drive, time, input_angle, current_pos, ALT);
-                // change_pos(AZI_drive, time, input_angle, current_pos, AZI);
+                cout << "input loaded" << endl;
+                // delta_pos = get_change_pos(future_pos,current_pos,time);
+                // ALT_drive.rotate(delta_pos[0]);
+                // AZI_drive.rotate(delta_pos[1]);
+                change_pos(ALT_drive, time, input_angle, current_pos, ALT);
+                change_pos(AZI_drive, time, input_angle, current_pos, AZI);
                 print_elev_azi_vector(current_pos);
                 //cout << difftime(time, mktime(&test)) << endl;
                 break;
