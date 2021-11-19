@@ -164,7 +164,7 @@ void change_pos(/*EasyDriver &driver,*/int time, vector<vector<double>> future, 
     AZI_drive.rotate(hold[1]);
     current[0][0] = current[0][0] + hold[0]; 
     current[0][1] = current[0][1] + hold[1];
-    cout << "Rotating " << hold[0] << " degrees" << endl;
+    cout << "Rotating " << hold[1] << " degrees" << endl;
     
     return;  
 
@@ -276,6 +276,8 @@ int main(int argc, char *argv[]){
                 // ALT_drive.rotate(delta_pos[0]);
                 // AZI_drive.rotate(delta_pos[1]);
                 change_pos(time, input_angle, current_pos);
+                current_pos[time][0] += input_angle[0][0];
+                current_pos[time][1] += input_angle[0][1];
                 print_elev_azi_vector(current_pos);
                 hold.clear();
                 input_angle.clear();
