@@ -78,7 +78,8 @@ void print_top_menu(){
 
 // >80 degrees danger detection
 bool is_danger(vector<vector<double>> future_pos, int time){
-    if(future_pos[0][time] > 80){
+    if(future_pos[time][0] > 80){
+        cout << "is_danger future pos: " << future_pos[time][0] << endl;
         return true;
     }else{
         return false;
@@ -120,12 +121,9 @@ vector<double> get_change_pos(vector<vector<double>> future, vector<vector<doubl
     double hold1, hold2;
     
     if(is_danger(future, time_index)){
-
-
         cout << "Danger Zone Detected: Sleeping for " << time_index << "ms" << endl;
         delta.push_back(0.0);
         delta.push_back(0.0);
-        return delta;
         return delta;
     }else{
         cout << "Calculating change in position" << endl;
@@ -133,6 +131,7 @@ vector<double> get_change_pos(vector<vector<double>> future, vector<vector<doubl
         hold2 = future[time_index][1] - current[0][1];
         delta.push_back(hold1);
         delta.push_back(hold2);
+        return delta;
         // cout << delta.size() << endl;
         // cout << hold1 << endl;
         // cout << hold2 << endl;
@@ -145,20 +144,19 @@ void change_pos(EasyDriver &driver, int time, vector<vector<double>> future, vec
     vector<double> hold;    
     hold = get_change_pos(future, current, time);
 
-    // if(hold[0] && hold[1])
-    //     return;
+     if(hold[0] == hold[1])
+         return;
 
     if(motor == 0){
         driver.rotate(hold[0]);
         current[0][0] += hold[0]; 
         current[0][1] += hold[1];
         cout << "Rotating " << hold[0] <<endl;
-
         return;  
     }else{
+        driver.rotate(hold[1]);
         current[0][0] += hold[0]; 
         current[0][1] += hold[1];
-        driver.rotate(hold[1]);
         cout << "Rotating " << hold[0] <<endl;
         return;
     }
@@ -260,24 +258,23 @@ int main(int argc, char *argv[]){
                 print_elev_azi_vector(current_pos);
                 //cout << difftime(time, mktime(&test)) << endl;
                 break;
-            // case 3:
-            //     print_elev_azi_vector();
-            //     future_pos = get_body("testData");
-            //     cout << "Data aquired" << endl;
-            //     current_pos.push_back(0);
-            //     current_pos.push_back(0);
-            //     cout << "current pos initalized" << endl;
-            //     delta_pos = get_change_pos(future_pos, current_pos, 0);
-            //     print_elev_azi_vector(future_pos);
-            //     cout << "delta calculated" << endl;
-            //     cout << delta_pos[0] << " " << delta_pos[1] << endl;
-            //     cout << current_pos[0] << current_pos[1] << endl;
-            //     delta_pos = get_change_pos(future_pos, current_pos, 1);
-            //     cout << "delta calculated" << endl;
-            //     cout << delta_pos[0] << " " << delta_pos[1] << endl;
-            //     cout << current_pos[0] << " " << current_pos[1] << endl;
-            //     cout << "Analog pin 0 value:" << readADC(0) << endl;
-            //     break;
+            case 3:
+                // print_elev_azi_vector();
+                // future_pos = get_body("testData");
+                // cout << "Data aquired" << endl;
+                // current_pos.push_back(0);
+                // current_pos.push_back(0);
+                // cout << "current pos initalized" << endl;
+                // delta_pos = get_change_pos(future_pos, current_pos, 0);
+                // print_elev_azi_vector(future_pos);
+                // cout << "delta calculated" << endl;
+                // cout << delta_pos[0] << " " << delta_pos[1] << endl;
+                // cout << current_pos[0] << current_pos[1] << endl;
+                // delta_pos = get_change_pos(future_pos, current_pos, 1);
+                // cout << "delta calculated" << endl;
+                // cout << delta_pos[0] << " " << delta_pos[1] << endl;
+                // cout << current_pos[0] << " " << current_pos[1] << endl;
+                break;
             default:
                 cout << "Invalid option, please input the number corresponding to the choice" << endl;
                 break;
