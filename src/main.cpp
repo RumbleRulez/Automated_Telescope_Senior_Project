@@ -123,7 +123,7 @@ vector<double> get_change_pos(vector<vector<double>> future, vector<vector<doubl
     
     cout << "Calculating change in position...in progress" << endl;
     
-    if(is_danger(future, time_index)){
+    if(future[time_index][0] > 80){
         cout << "Danger Zone Detected: Sleeping for " << time_index << "ms" << endl;
         delta.push_back(0.0);
         delta.push_back(0.0);
@@ -207,13 +207,13 @@ int main(int argc, char *argv[]){
     cout << "AZI Driver Initialized" << endl;
 
     //hold vars for menu
-    int choice;
+    int choice, time;
     bool isOn = true;
     double azi, elev;
     string body;
 
-    time_t time;
-    struct tm test = {0};
+    //time_t time;
+    //struct tm test = {0};
 
     //vectors for position trackings
     vector<vector<double>> future_pos;
