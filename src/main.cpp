@@ -17,6 +17,10 @@ enum motor_choice{
     AZI
 };
 
+//Easydriver objects
+EasyDriver ALT_drive(67,68,44,26,46,144,200);
+EasyDriver AZI_drive(65,27,47,45,69,144,200);
+
 vector<vector<double>> get_body(string body_name){
     vector<vector<double>> data;
     vector<double> alt_hold;
@@ -188,9 +192,6 @@ void sleep(int &time){
     return;
 }
 
-//Easydriver objects
-EasyDriver ALT_drive(67,68,44,26,46,144,200);
-EasyDriver AZI_drive(65,27,47,45,69,144,200);
 
 int main(int argc, char *argv[]){
     /*   
