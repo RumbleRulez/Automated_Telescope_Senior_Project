@@ -43,7 +43,7 @@ vector<vector<double>> get_body(string body_name){
 
         //while there is a delimiter then grab next one and shove it
         //into vector
-        //Azimuth is 1 dimensions and Elevation is 0 dimension == elev,azi
+        //Azimuth is 0 dimensions and Elevation is 1 dimension == azi, elev
         while(getline(sent, word,',')){
             alt_hold.push_back(stod(word));
         }
@@ -154,11 +154,13 @@ void change_pos(/*EasyDriver &driver,*/int time, vector<vector<double>> future, 
     cout << "change pos called" << endl;
     hold = get_change_pos(future, current, time, goingDown);
 
+    //return if the holds give no change (ie. danger zone detected)
     if(hold[0] == hold[1])
         return;
     
+    //changing altitude
     cout << "Changing alt" << endl;
-    ALT_drive.rotate(5.95*(90-hold[0]));
+    ALT_drive.rotate(5.95*hold[0]);
     cout << "Hold vector: " << hold[0] << " " << hold[1] << endl;
     cout << "Rotating " << hold[0] << " degrees" <<endl;
     
@@ -170,31 +172,7 @@ void change_pos(/*EasyDriver &driver,*/int time, vector<vector<double>> future, 
     
     return;  
 
-//     if(motor == 0){
-//         cout << "changing alt" << endl;
-//         driver.rotate(hold[0]);
-//         cout << "Hold vector: " << hold[0] << " " << hold[1] << endl;
-//         current[0][0] = current[0][0] + hold[0]; 
-//         current[0][1] = current[0][1] + hold[1];
-//         cout << "Rotating " << hold[0] <<endl;
-//         return;  
-//     }else{
-//         cout << "changing azi" << endl;
-//         driver.rotate(hold[1]);
-//         cout << "Hold vector: " << hold[0] << " " << hold[1] << endl;
-//         current[0][0] = current[0][0] + hold[0]; 
-//         current[0][1] = current[0][1] + hold[1];
-//         cout << "Rotating " << hold[0] <<endl;
-//         return;
-//     }
 }
-
-// //sleep for 1 sec
-// void sleep(int &time){
-//     system("./sleep.sh");
-//     time++;
-//     return;
-// }
 
     /*   
         Pins for BBB. P8 is the header and the number is the pin # located on the beaglebone pinout guide
@@ -221,10 +199,6 @@ void change_pos(/*EasyDriver &driver,*/int time, vector<vector<double>> future, 
    */
 
 int main(int argc, char *argv[]){
-
-    cout << "ALT Driver Initialized" << endl;
-    cout << "AZI Driver Initialized" << endl;
-    
     //hold vars for menu
     int choice, time = 0;
     bool isOn = true, goingDown = false;
@@ -241,12 +215,17 @@ int main(int argc, char *argv[]){
     //declare sys start
     cout << "System Initialized" << endl;
     
-    //get IMU data
+    //get IMU data (azi, y, elev)
     current_pos = getIMU();
+    //get rid of y angle to get only (azi,elev)
+    current_pos.erase(1);
+    
+    //azi + 90 degrees to calibrate to north
     current_pos[0][1] += 90;
-    if(current_pos[0][1] > 365){
-	current_pos[0][1] -= 365;
-    }
+        //if azi is greater than 365 then sub 365
+        if(current_pos[0][1] > 365){
+	        current_pos[0][1] -= 365;
+        }
     cout << "IMU Initialized" << endl;
 
     //loop to keep alive
@@ -263,47 +242,40 @@ int main(int argc, char *argv[]){
                 isOn  = false;
                 break;
             case 1:
+                //print menu and take choice
                 print_body_menu();
                 cin >> choice;
+                //get future position from selected celestial body
                 future_pos = select_body(choice);
                 print_elev_azi_vector(future_pos);
+                //sleep for a minute
                 this_thread::sleep_for(chrono::minutes(1));
+                //increase time to represent sleep
                 time++;
                 break;
             case 2:
+                //take desired coords
                 cout << "Please input new elevation in degrees:" << endl;
                 cin >> elev;
                 cout << "Please input new azimuth in degrees:" << endl;
                 cin >> azi;
+                //load into single vector
                 hold.push_back(elev);
                 hold.push_back(azi);
+                //load into a double vector for ease of use
                 input_angle.push_back(hold);
                 cout << "input loaded" << endl;
+                //change pos
                 change_pos(time, input_angle, current_pos, goingDown);
+                //update current position
                 current_pos[time][0] += input_angle[0][0];
                 current_pos[time][1] += input_angle[0][1];
+                //print current position
                 print_elev_azi_vector(current_pos);
+                //clear input vector
                 hold.clear();
                 input_angle.clear();
-                //this_thread::sleep_for(chrono::minutes(1));
                 break;
-            //case 3:
-                // print_elev_azi_vector();
-                // future_pos = get_body("testData");
-                // cout << "Data aquired" << endl;
-                // current_pos.push_back(0);
-                // current_pos.push_back(0);
-                // cout << "current pos initalized" << endl;
-                // delta_pos = get_change_pos(future_pos, current_pos, 0);
-                // print_elev_azi_vector(future_pos);
-                // cout << "delta calculated" << endl;
-                // cout << delta_pos[0] << " " << delta_pos[1] << endl;
-                // cout << current_pos[0] << current_pos[1] << endl;
-                // delta_pos = get_change_pos(future_pos, current_pos, 1);
-                // cout << "delta calculated" << endl;
-                // cout << delta_pos[0] << " " << delta_pos[1] << endl;
-                // cout << current_pos[0] << " " << current_pos[1] << endl;
-               //break;
             default:
                 cout << "Invalid option, please input the number corresponding to the choice" << endl;
                 break;
