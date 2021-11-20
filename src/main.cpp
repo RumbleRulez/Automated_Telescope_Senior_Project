@@ -158,12 +158,12 @@ void change_pos(/*EasyDriver &driver,*/int time, vector<vector<double>> future, 
         return;
     
     cout << "Changing alt" << endl;
-    ALT_drive.rotate(hold[0]);
+    ALT_drive.rotate(5.95*(90-hold[0]));
     cout << "Hold vector: " << hold[0] << " " << hold[1] << endl;
     cout << "Rotating " << hold[0] << " degrees" <<endl;
     
     cout << "Changing azi" << endl;
-    AZI_drive.rotate(hold[1]);
+    AZI_drive.rotate(17.06*hold[1]);
     // current[0][0] = current[0][0] + hold[0]; 
     // current[0][1] = current[0][1] + hold[1];
     cout << "Rotating " << hold[1] << " degrees" << endl;
@@ -243,6 +243,10 @@ int main(int argc, char *argv[]){
     
     //get IMU data
     current_pos = getIMU();
+    current_pos[0][1] += 90;
+    if(current_pos[0][1] > 365){
+	current_pos[0][1] -= 365;
+    }
     cout << "IMU Initialized" << endl;
 
     //loop to keep alive
@@ -281,7 +285,7 @@ int main(int argc, char *argv[]){
                 print_elev_azi_vector(current_pos);
                 hold.clear();
                 input_angle.clear();
-                this_thread::sleep_for(chrono::minutes(1));
+                //this_thread::sleep_for(chrono::minutes(1));
                 break;
             //case 3:
                 // print_elev_azi_vector();
