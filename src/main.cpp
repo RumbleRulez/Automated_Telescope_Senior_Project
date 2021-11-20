@@ -82,10 +82,10 @@ void print_top_menu(){
 // >80 degrees danger detection
 bool is_danger(vector<vector<double>> future_pos, int time, bool &goingDown){
     cout << "Verifying danger zone" << endl;
-    if(future_pos[time][0] > 80){
+    if(future_pos[time][1] > 80){
         goingDown = true;
         AZI_drive.rotate(180);
-        cout << "is_danger future pos: " << future_pos[time][0] << endl;
+        cout << "is_danger future pos: " << future_pos[time][1] << endl;
         return true;
     }else{
         return false;
@@ -127,7 +127,7 @@ vector<double> get_change_pos(vector<vector<double>> future, vector<vector<doubl
     
     cout << "Calculating change in position...in progress" << endl;
     
-    if(future[time_index][0] > 80){
+    if(future[time_index][1] > 80){
         cout << "Danger Zone Detected: Sleeping for " << time_index << "ms" << endl;
         delta.push_back(0.0);
         delta.push_back(0.0);
@@ -141,14 +141,11 @@ vector<double> get_change_pos(vector<vector<double>> future, vector<vector<doubl
         delta.push_back(hold1);
         delta.push_back(hold2);
         return delta;
-        // cout << delta.size() << endl;
-        // cout << hold1 << endl;
-        // cout << hold2 << endl;
     }
 }
 
 //change position function
-void change_pos(/*EasyDriver &driver,*/int time, vector<vector<double>> future, vector<vector<double>> &current, bool &goingDown)
+void change_pos(int time, vector<vector<double>> future, vector<vector<double>> &current, bool &goingDown)
 {   
     vector<double> hold;
     cout << "change pos called" << endl;
@@ -160,15 +157,15 @@ void change_pos(/*EasyDriver &driver,*/int time, vector<vector<double>> future, 
     
     //changing altitude
     cout << "Changing alt" << endl;
-    ALT_drive.rotate(5.95*hold[0]);
-    cout << "Hold vector: " << hold[0] << " " << hold[1] << endl;
-    cout << "Rotating " << hold[0] << " degrees" <<endl;
+    ALT_drive.rotate(5.95*hold[1]);
+    cout << "Hold vector: " << hold[1] << " " << hold[1] << endl;
+    cout << "Rotating " << hold[1] << " degrees" <<endl;
     
     cout << "Changing azi" << endl;
-    AZI_drive.rotate(17.06*hold[1]);
+    AZI_drive.rotate(17.06*hold[0]);
     // current[0][0] = current[0][0] + hold[0]; 
     // current[0][1] = current[0][1] + hold[1];
-    cout << "Rotating " << hold[1] << " degrees" << endl;
+    cout << "Rotating " << hold[0] << " degrees" << endl;
     
     return;  
 
@@ -248,6 +245,7 @@ int main(int argc, char *argv[]){
                 //get future position from selected celestial body
                 future_pos = select_body(choice);
                 print_elev_azi_vector(future_pos);
+                change_pos(time, input_angle, current_pos, goingDown);
                 //sleep for a minute
                 this_thread::sleep_for(chrono::minutes(1));
                 //increase time to represent sleep
