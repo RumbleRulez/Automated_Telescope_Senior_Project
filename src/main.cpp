@@ -270,9 +270,6 @@ int main(int argc, char *argv[]){
                 cout << "input loaded" << endl;
                 //change pos
                 change_pos(time, input_angle,goingDown);
-                //update current position
-                current_pos[time][0] += input_angle[0][0];
-                current_pos[time][1] += input_angle[0][1];
                 //print current position
                 print_elev_azi_vector(current_pos);
                 //clear input vector
