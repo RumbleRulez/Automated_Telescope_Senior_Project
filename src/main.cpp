@@ -215,7 +215,7 @@ int main(int argc, char *argv[]){
     //get IMU data (azi, y, elev)
     current_pos = getIMU();
     //get rid of y angle to get only (azi,elev)
-    current_pos.erase(1);
+    current_pos.erase(0);
     
     //azi + 90 degrees to calibrate to north
     current_pos[0][1] += 90;
