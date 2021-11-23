@@ -123,7 +123,7 @@ vector<vector<double>> getIMU(){
 //function to get change in current position to future position
 vector<double> get_change_pos(vector<vector<double>> future, int time_index, bool &goingDown){
     vector<double> delta;
-    vector<vector<double>> current;
+    vector<vector<double>> current_pos;
     double hold1, hold2;
     
     //get IMU data (azi, y, elev)
@@ -158,7 +158,7 @@ vector<double> get_change_pos(vector<vector<double>> future, int time_index, boo
 //change position function
 void change_pos(int time, vector<vector<double>> future, bool &goingDown)
 {   
-    vector<double> hold;
+    vector<double> delta;
     cout << "change pos called" << endl;
     delta = get_change_pos(future,time, goingDown);
 
@@ -250,7 +250,7 @@ int main(int argc, char *argv[]){
                 //get future position from selected celestial body
                 future_pos = select_body(choice);
                 print_elev_azi_vector(future_pos);
-                change_pos(time, input_angle, current_pos, goingDown);
+                change_pos(time, input_angle,goingDown);
                 //sleep for a minute
                 this_thread::sleep_for(chrono::minutes(1));
                 //increase time to represent sleep
