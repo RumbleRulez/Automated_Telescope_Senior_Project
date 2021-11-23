@@ -15,7 +15,7 @@ print("Writing Data...")
 def writeData():
     filename = "IMU_Data.csv"
     #print("is calibrated: ", sensor.calibrated())
-    sys, gyro, acc ,mag = sensor.calibration_status()
+    sys, gyro, acc ,mag = sensor.calibration_status
     print(sys, gyro, acc, mag)
     with open(filename, 'w' ) as csvfile:
         csvwriter = csv.writer(csvfile)
