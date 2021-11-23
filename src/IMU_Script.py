@@ -14,12 +14,12 @@ print("Writing Data...")
 
 def writeData():
     filename = "IMU_Data.csv"
-    print("is calibrated: ", sensor.calibrated())
-    print("Calibration status: {0}".format(sensor.calibration_status()))
+    #print("is calibrated: ", sensor.calibrated())
+    #print("Calibration status: {0}".format(sensor.calibration_status()))
     with open(filename, 'w' ) as csvfile:
         csvwriter = csv.writer(csvfile)
         time.sleep(1)
         csvwriter.writerow(sensor.euler)
-        print(sensor.euler)
+       # print(sensor.euler)
 
 writeData()

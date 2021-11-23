@@ -215,7 +215,7 @@ int main(int argc, char *argv[]){
     //get IMU data (azi, y, elev)
     current_pos = getIMU();
     //get rid of y angle to get only (azi,elev)
-    current_pos.erase(current_pos.begin());
+    //current_pos.erase(current_pos.begin());
     
     //azi + 90 degrees to calibrate to north
     current_pos[0][1] += 90;
@@ -224,6 +224,9 @@ int main(int argc, char *argv[]){
 	        current_pos[0][1] -= 365;
         }
     cout << "IMU Initialized" << endl;
+    cout << "Current Pos: ";
+    print_elev_azi_vector(current_pos);
+    cout << "\n";
 
     //loop to keep alive
     while(isOn == true){
