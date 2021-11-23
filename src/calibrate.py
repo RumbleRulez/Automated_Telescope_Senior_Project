@@ -10,4 +10,5 @@ time.sleep(1)
 print("Calibration Status:")
 sys, gyro, acc ,mag = sensor.calibration_status
 print(sensor.calibrated)
+print(sensor.euler)
 print("Sys: ", sys," Gyro: ", gyro," Acc: ", acc, " Mag: ",mag)
