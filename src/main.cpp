@@ -121,10 +121,21 @@ vector<vector<double>> getIMU(){
 }
 
 //function to get change in current position to future position
-vector<double> get_change_pos(vector<vector<double>> future, vector<vector<double>> current, int time_index, bool &goingDown){
+vector<double> get_change_pos(vector<vector<double>> future, int time_index, bool &goingDown){
     vector<double> delta;
+    vector<vector<double>> current;
     double hold1, hold2;
     
+    //get IMU data (azi, y, elev)
+    current_pos = getIMU();
+    print_elev_azi_vector(current_pos);
+
+    //azi + 90 degrees to calibrate to north
+    //current_pos[0][1] += 90;
+    //if azi is greater than 365 then sub 365
+    if(current_pos[0][0] > 365){
+	    current_pos[0][0] -= 365;
+    }
     cout << "Calculating change in position...in progress" << endl;
     
     if(future[time_index][1] > 80){
@@ -145,27 +156,26 @@ vector<double> get_change_pos(vector<vector<double>> future, vector<vector<doubl
 }
 
 //change position function
-void change_pos(int time, vector<vector<double>> future, vector<vector<double>> &current, bool &goingDown)
+void change_pos(int time, vector<vector<double>> future, bool &goingDown)
 {   
     vector<double> hold;
     cout << "change pos called" << endl;
-    hold = get_change_pos(future, current, time, goingDown);
+    delta = get_change_pos(future,time, goingDown);
 
     //return if the holds give no change (ie. danger zone detected)
-    if(hold[0] == hold[1])
+    if(delta[0] == delta[1])
         return;
     
     //changing altitude
     cout << "Changing alt" << endl;
-    ALT_drive.rotate(5.95*hold[1]);
-    cout << "Hold vector: " << hold[1] << " " << hold[1] << endl;
-    cout << "Rotating " << hold[1] << " degrees" <<endl;
+    ALT_drive.rotate(5.95*delta[1]);
+    cout << "Delta vector: " << delta[1] << " " << delta[1] << endl;
+    cout << "Rotating " << delta[1] << " degrees" <<endl;
     
+    //changing azimuth
     cout << "Changing azi" << endl;
-    AZI_drive.rotate(17.06*hold[0]);
-    // current[0][0] = current[0][0] + hold[0]; 
-    // current[0][1] = current[0][1] + hold[1];
-    cout << "Rotating " << hold[0] << " degrees" << endl;
+    AZI_drive.rotate(17.06*delta[0]);
+    cout << "Rotating " << delta[0] << " degrees" << endl;
     
     return;  
 
@@ -212,17 +222,9 @@ int main(int argc, char *argv[]){
     //declare sys start
     cout << "System Initialized" << endl;
     
-    //get IMU data (azi, y, elev)
+    //get IMU data
     current_pos = getIMU();
-    //get rid of y angle to get only (azi,elev)
-    //current_pos.erase(current_pos.begin());
     
-    //azi + 90 degrees to calibrate to north
-    current_pos[0][1] += 90;
-        //if azi is greater than 365 then sub 365
-        if(current_pos[0][1] > 365){
-	        current_pos[0][1] -= 365;
-        }
     cout << "IMU Initialized" << endl;
     cout << "Current Pos: ";
     print_elev_azi_vector(current_pos);
@@ -267,7 +269,7 @@ int main(int argc, char *argv[]){
                 input_angle.push_back(hold);
                 cout << "input loaded" << endl;
                 //change pos
-                change_pos(time, input_angle, current_pos, goingDown);
+                change_pos(time, input_angle,goingDown);
                 //update current position
                 current_pos[time][0] += input_angle[0][0];
                 current_pos[time][1] += input_angle[0][1];
