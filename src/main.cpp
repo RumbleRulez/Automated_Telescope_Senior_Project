@@ -83,7 +83,7 @@ void print_top_menu(){
 bool is_danger(vector<vector<double>> future_pos, int time, bool &goingDown){
     cout << "Verifying danger zone" << endl;
     if(future_pos[time][1] > 80){
-        goingDown = true;
+        goingDown = !goingDown;
         AZI_drive.rotate(180);
         cout << "is_danger future pos: " << future_pos[time][1] << endl;
         return true;
@@ -133,19 +133,27 @@ vector<double> get_change_pos(vector<vector<double>> future,vector<vector<double
     cout << "Calculating change in position...in progress" << endl;
     
     if(is_danger(future,time_index, goingDown)){
-        cout << "Danger Zone Detected: Sleeping for " << time_index << "ms" << endl;
+        cout << "Danger Zone Detected: Sleeping..." << endl;
         delta.push_back(0.0);
         delta.push_back(0.0);
-        goingDown = true;
         AZI_drive.rotate(180);
         return delta;
     }else{
-        cout << "Calculated change in position" << endl;
-        hold1 = future[time_index][0] - current[0][0];
-        hold2 = future[time_index][1] - current[0][1];
-        delta.push_back(hold1);
-        delta.push_back(hold2);
-        return delta;
+        if(goingDown){
+            cout << "Calculated change in position" << endl;
+            hold1 = future[time_index][0] - current[0][0];
+            hold2 = -1*(future[time_index][1] - current[0][1]);
+            delta.push_back(hold1);
+            delta.push_back(hold2);
+            return delta;
+        }else{
+            cout << "Calculated change in position" << endl;
+            hold1 = future[time_index][0] - current[0][0];
+            hold2 = future[time_index][1] - current[0][1];
+            delta.push_back(hold1);
+            delta.push_back(hold2);
+            return delta;
+        }
     }
 }
 
@@ -154,7 +162,7 @@ void change_pos(int time, vector<vector<double>> future, vector<vector<double>> 
 {   
     vector<double> delta;
     cout << "change pos called" << endl;
-    hold = get_change_pos(future, current, time, goingDown);
+    delta = get_change_pos(future, current, time, goingDown);
 
     //return if the holds give no change (ie. danger zone detected)
     if(delta[0] == delta[1])
@@ -234,8 +242,8 @@ int main(int argc, char *argv[]){
     while(isOn){
     
         //if azi is greater than 365 then sub 365 -- passes 0 point
-        if(current_pos[0][0] > 365){
-	        current_pos[0][0] -= 365;
+        if(current_pos[0][0] > 360){
+	        current_pos[0][0] -= 360;
         }
 
         //print choice menu
