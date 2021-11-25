@@ -119,26 +119,20 @@ vector<vector<double>> getIMU(){
     system("./start_IMU.sh");
     return get_body("IMU_Data");
 }
-
+//////////////////////////////////////////////////
+// Check this
+/////////////////////
+/////////////////////////
+///////////////////////////
+//////////////////////////////
 //function to get change in current position to future position
-vector<double> get_change_pos(vector<vector<double>> future, int time_index, bool &goingDown){
+vector<double> get_change_pos(vector<vector<double>> future,vector<vector<double>> current, int time_index, bool &goingDown){
     vector<double> delta;
-    vector<vector<double>> current_pos;
     double hold1, hold2;
-    
-    //get IMU data (azi, y, elev)
-    current_pos = getIMU();
-    print_elev_azi_vector(current_pos);
 
-    //azi + 90 degrees to calibrate to north
-    //current_pos[0][1] += 90;
-    //if azi is greater than 365 then sub 365
-    if(current_pos[0][0] > 365){
-	    current_pos[0][0] -= 365;
-    }
     cout << "Calculating change in position...in progress" << endl;
     
-    if(future[time_index][1] > 80){
+    if(is_danger(future,time_index, goingDown)){
         cout << "Danger Zone Detected: Sleeping for " << time_index << "ms" << endl;
         delta.push_back(0.0);
         delta.push_back(0.0);
@@ -156,26 +150,29 @@ vector<double> get_change_pos(vector<vector<double>> future, int time_index, boo
 }
 
 //change position function
-void change_pos(int time, vector<vector<double>> future, bool &goingDown)
+void change_pos(int time, vector<vector<double>> future, vector<vector<double>> &current, bool &goingDown)
 {   
     vector<double> delta;
     cout << "change pos called" << endl;
-    delta = get_change_pos(future,time, goingDown);
+    hold = get_change_pos(future, current, time, goingDown);
 
     //return if the holds give no change (ie. danger zone detected)
     if(delta[0] == delta[1])
         return;
     
+    cout << "delta vector: " << delta[0] << " " << delta[1] << endl;
+
     //changing altitude
     cout << "Changing alt" << endl;
     ALT_drive.rotate(5.95*delta[1]);
-    cout << "Delta vector: " << delta[1] << " " << delta[1] << endl;
     cout << "Rotating " << delta[1] << " degrees" <<endl;
     
-    //changing azimuth
     cout << "Changing azi" << endl;
     AZI_drive.rotate(17.06*delta[0]);
     cout << "Rotating " << delta[0] << " degrees" << endl;
+
+    // current[0][0] = current[0][0] + hold[0]; 
+    // current[0][1] = current[0][1] + hold[1];
     
     return;  
 
@@ -225,14 +222,22 @@ int main(int argc, char *argv[]){
     //get IMU data
     current_pos = getIMU();
     
+    //azi + 90 degrees to calibrate to north
+    //current_pos[0][0] += 90;
+    
     cout << "IMU Initialized" << endl;
     cout << "Current Pos: ";
     print_elev_azi_vector(current_pos);
     cout << "\n";
 
     //loop to keep alive
-    while(isOn == true){
+    while(isOn){
     
+        //if azi is greater than 365 then sub 365 -- passes 0 point
+        if(current_pos[0][0] > 365){
+	        current_pos[0][0] -= 365;
+        }
+
         //print choice menu
         //and take in choice for top level
         print_top_menu();
@@ -250,7 +255,7 @@ int main(int argc, char *argv[]){
                 //get future position from selected celestial body
                 future_pos = select_body(choice);
                 print_elev_azi_vector(future_pos);
-                change_pos(time, input_angle,goingDown);
+                change_pos(time, input_angle, current_pos, goingDown);
                 //sleep for a minute
                 this_thread::sleep_for(chrono::minutes(1));
                 //increase time to represent sleep
@@ -269,7 +274,7 @@ int main(int argc, char *argv[]){
                 input_angle.push_back(hold);
                 cout << "input loaded" << endl;
                 //change pos
-                change_pos(time, input_angle,goingDown);
+                change_pos(time, input_angle,current_pos,goingDown);
                 //print current position
                 print_elev_azi_vector(current_pos);
                 //clear input vector
