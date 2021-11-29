@@ -131,7 +131,6 @@ vector<double> get_change_pos(vector<vector<double>> future,vector<vector<double
         cout << "Danger Zone Detected: Sleeping..." << endl;
         delta.push_back(0.0);
         delta.push_back(0.0);
-        AZI_drive.rotate(180);
         return delta;
     }else{
         if(goingDown){
@@ -167,11 +166,11 @@ void change_pos(int time, vector<vector<double>> future, vector<vector<double>> 
 
     //changing altitude
     cout << "Changing alt" << endl;
-    ALT_drive.rotate(5.95*delta[1]);
+    ALT_drive.rotate(5.952380952*delta[1]);
     cout << "Rotating " << delta[1] << " degrees" <<endl;
     
     cout << "Changing azi" << endl;
-    AZI_drive.rotate(17.06*delta[0]);
+    AZI_drive.rotate(17.06349206*delta[0]);
     cout << "Rotating " << delta[0] << " degrees" << endl;
 
     // current[0][0] = current[0][0] + hold[0]; 
@@ -260,7 +259,7 @@ int main(int argc, char *argv[]){
                     cin >> choice;
                     //get future position from selected celestial body
                     future_pos = select_body(choice);
-                    print_elev_azi_vector(future_pos);
+                    //print_elev_azi_vector(future_pos);
                     change_pos(time, input_angle, current_pos, goingDown);
                     AZI_drive.sleep();
                     ALT_drive.sleep();

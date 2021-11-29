@@ -23,6 +23,6 @@ def writeData():
         csvwriter = csv.writer(csvfile)
         time.sleep(1)
         csvwriter.writerow(sensor.euler)
-        print(sensor.euler)
+        #print(sensor.euler)
 
 writeData()
