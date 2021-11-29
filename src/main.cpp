@@ -286,20 +286,20 @@ int main(int argc, char *argv[]){
                 current_pos = getIMU();
                 //if azi is greater than 360 then sub 360 -- passes 0 point
                 //azi + 90 degrees to calibrate to north
-                current_pos[0][0] += 270;
-                if(current_pos[0][0] > 360){
-	                current_pos[0][0] -= 360;
-                }
+                // current_pos[0][0] += 90;
+                // if(current_pos[0][0] > 360){
+	            //     current_pos[0][0] -= 360;
+                // }
                 print_elev_azi_vector(current_pos);
                 
                 //change pos
                 change_pos(0, input_angle,current_pos,goingDown);
                 //print current position
                 current_pos = getIMU();
-                current_pos[0][0] += 270;
-                if(current_pos[0][0] > 360){
-	                current_pos[0][0] -= 360;
-                }
+                // current_pos[0][0] += 90;
+                // if(current_pos[0][0] > 360){
+	            //     current_pos[0][0] -= 360;
+                // }
                 print_elev_azi_vector(current_pos);
                 //clear input vector
                 current_pos.clear();
