@@ -151,6 +151,7 @@ void change_pos(int time, vector<vector<double>> future, vector<vector<double>> 
 {   
     vector<vector<double>> temp_curr;
     vector<double> delta;
+    double perc_diff_azi = 0;
     cout << "change pos called" << endl;
     delta = get_change_pos(future, current, time, goingDown);
     cout << "delta vector: " << delta[0] << " " << delta[1] << endl;
@@ -169,7 +170,17 @@ void change_pos(int time, vector<vector<double>> future, vector<vector<double>> 
     AZI_drive.rotate(17.06349206*delta[0]);
     cout << "Rotating " << delta[0] << " degrees" << endl;
 
+    temp_curr = getIMU();
+    perc_diff =  future[time][0] - temp_curr[0][0])/(future[time][0] - temp_curr[0][0]) *100;
+    while(perc_diff_azi != 10){
+        AZI_drive.rotate(17.06349206*(future[0] - temp_curr[0][0]));
+        temp_curr = getIMU();
+    }
+    if(future[time][0]!= temp_curr[0][0])
+        AZI_drive.rotate(17.06349206*(future[0] + temp_curr[0][0]));
 
+    if(future[time][1]!= temp_curr[0][1])
+        ALT_drive.rotate(8.928571428*(future[1] + temp_curr[0][1]));
 
     // current[0][0] = current[0][0] + hold[0]; 
     // current[0][1] = current[0][1] + hold[1];
