@@ -11,11 +11,6 @@
 
 using namespace std;
 
-enum motor_choice{
-    ALT,
-    AZI
-};
-
 //Easydriver objects
 EasyDriver ALT_drive(67,68,44,26,46,144,200);
 EasyDriver AZI_drive(65,27,47,45,69,144,200);
@@ -157,16 +152,16 @@ void change_pos(int time, vector<vector<double>> future, vector<vector<double>> 
     vector<double> delta;
     cout << "change pos called" << endl;
     delta = get_change_pos(future, current, time, goingDown);
-
+    cout << "delta vector: " << delta[0] << " " << delta[1] << endl;
     //return if the holds give no change (ie. danger zone detected)
     if(delta[0] == delta[1])
         return;
     
-    cout << "delta vector: " << delta[0] << " " << delta[1] << endl;
+
 
     //changing altitude
     cout << "Changing alt" << endl;
-    ALT_drive.rotate(5.952380952*delta[1]);
+    ALT_drive.rotate(6.35*delta[1]);
     cout << "Rotating " << delta[1] << " degrees" <<endl;
     
     cout << "Changing azi" << endl;
@@ -283,12 +278,15 @@ int main(int argc, char *argv[]){
                 cout << "input loaded" << endl;
                 //update current pos
                 current_pos = getIMU();
+                print_elev_azi_vector(current_pos);
                 //if azi is greater than 360 then sub 360 -- passes 0 point
+                //azi + 90 degrees to calibrate to north
+                current_pos[0][0] -= 90;
                 if(current_pos[0][0] > 360){
 	                current_pos[0][0] -= 360;
                 }
-                //azi + 90 degrees to calibrate to north
-                current_pos[0][0] -= 90;
+                
+                
                 AZI_drive.wake();
                 ALT_drive.wake();
                 //change pos
