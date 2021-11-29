@@ -119,12 +119,7 @@ vector<vector<double>> getIMU(){
     system("./start_IMU.sh");
     return get_body("IMU_Data");
 }
-//////////////////////////////////////////////////
-// Check this
-/////////////////////
-/////////////////////////
-///////////////////////////
-//////////////////////////////
+
 //function to get change in current position to future position
 vector<double> get_change_pos(vector<vector<double>> future,vector<vector<double>> current, int time_index, bool &goingDown){
     vector<double> delta;
@@ -231,7 +226,7 @@ int main(int argc, char *argv[]){
     current_pos = getIMU();
     
     //azi + 90 degrees to calibrate to north
-    //current_pos[0][0] += 90;
+    current_pos[0][0] += 90;
     
     cout << "IMU Initialized" << endl;
     cout << "Current Pos: ";
@@ -241,11 +236,14 @@ int main(int argc, char *argv[]){
     //loop to keep alive
     while(isOn){
     
-        //if azi is greater than 365 then sub 365 -- passes 0 point
+        //if azi is greater than 360 then sub 360 -- passes 0 point
         if(current_pos[0][0] > 360){
 	        current_pos[0][0] -= 360;
         }
 
+        cout << "Current Pos: ";
+        print_elev_azi_vector(current_pos);
+        
         //print choice menu
         //and take in choice for top level
         print_top_menu();
@@ -281,6 +279,8 @@ int main(int argc, char *argv[]){
                 //load into a double vector for ease of use
                 input_angle.push_back(hold);
                 cout << "input loaded" << endl;
+                //update current pos
+                current_pos = getIMU();
                 //change pos
                 change_pos(time, input_angle,current_pos,goingDown);
                 //print current position
