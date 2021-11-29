@@ -162,7 +162,7 @@ void change_pos(int time, vector<vector<double>> future, vector<vector<double>> 
     
     //changing altitude
     cout << "Changing alt" << endl;
-    ALT_drive.rotate(5.952380952*delta[1]);
+    ALT_drive.rotate(8.928571428*delta[1]);
     cout << "Rotating " << delta[1] << " degrees" <<endl;
     
     cout << "Changing azi" << endl;
