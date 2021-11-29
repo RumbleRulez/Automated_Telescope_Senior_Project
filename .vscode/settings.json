@@ -5,6 +5,7 @@
         "vector": "cpp",
         "sstream": "cpp",
         "fstream": "cpp",
-        "ostream": "cpp"
+        "ostream": "cpp",
+        "thread": "cpp"
     }
 }
