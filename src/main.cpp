@@ -149,6 +149,7 @@ vector<double> get_change_pos(vector<vector<double>> future,vector<vector<double
 //change position function
 void change_pos(int time, vector<vector<double>> future, vector<vector<double>> &current, bool &goingDown)
 {   
+    vector<vector<double>> temp_curr;
     vector<double> delta;
     cout << "change pos called" << endl;
     delta = get_change_pos(future, current, time, goingDown);
@@ -158,7 +159,7 @@ void change_pos(int time, vector<vector<double>> future, vector<vector<double>> 
         return;
     
 
-
+    
     //changing altitude
     cout << "Changing alt" << endl;
     ALT_drive.rotate(6.35*delta[1]);
@@ -167,6 +168,8 @@ void change_pos(int time, vector<vector<double>> future, vector<vector<double>> 
     cout << "Changing azi" << endl;
     AZI_drive.rotate(18.21*delta[0]);
     cout << "Rotating " << delta[0] << " degrees" << endl;
+
+
 
     // current[0][0] = current[0][0] + hold[0]; 
     // current[0][1] = current[0][1] + hold[1];
@@ -281,7 +284,7 @@ int main(int argc, char *argv[]){
                 current_pos = getIMU();
                 //if azi is greater than 360 then sub 360 -- passes 0 point
                 //azi + 90 degrees to calibrate to north
-                current_pos[0][0] -= 90;
+                current_pos[0][0] += 270;
                 if(current_pos[0][0] > 360){
 	                current_pos[0][0] -= 360;
                 }
