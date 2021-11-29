@@ -249,12 +249,16 @@ int main(int argc, char *argv[]){
         print_top_menu();
         cin >> choice;
 
+        AZI_drive.sleep();
+        ALT_drive.sleep();
         switch(choice){
             case 0:
                 cout << "Thank you for using this product!" << endl;
                 isOn  = false;
                 break;
             case 1:
+                AZI_drive.wake();
+                ALT_drive.wake();
                 //print menu and take choice
                 print_body_menu();
                 cin >> choice;
@@ -269,23 +273,27 @@ int main(int argc, char *argv[]){
                 break;
             case 2:
                 //take desired coords
-                cout << "Please input new elevation in degrees:" << endl;
-                cin >> elev;
                 cout << "Please input new azimuth in degrees:" << endl;
                 cin >> azi;
+                cout << "Please input new elevation in degrees:" << endl;
+                cin >> elev;
                 //load into single vector
-                hold.push_back(elev);
                 hold.push_back(azi);
+                hold.push_back(elev);
                 //load into a double vector for ease of use
                 input_angle.push_back(hold);
                 cout << "input loaded" << endl;
                 //update current pos
                 current_pos = getIMU();
+
+                AZI_drive.wake();
+                ALT_drive.wake();
                 //change pos
-                change_pos(time, input_angle,current_pos,goingDown);
+                change_pos(0, input_angle,current_pos,goingDown);
                 //print current position
                 print_elev_azi_vector(current_pos);
                 //clear input vector
+                current_pos.clear();
                 hold.clear();
                 input_angle.clear();
                 break;
