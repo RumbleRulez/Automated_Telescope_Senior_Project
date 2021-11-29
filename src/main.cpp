@@ -165,7 +165,7 @@ void change_pos(int time, vector<vector<double>> future, vector<vector<double>> 
     cout << "Rotating " << delta[1] << " degrees" <<endl;
     
     cout << "Changing azi" << endl;
-    AZI_drive.rotate(17.06349206*delta[0]);
+    AZI_drive.rotate(18.21*delta[0]);
     cout << "Rotating " << delta[0] << " degrees" << endl;
 
     // current[0][0] = current[0][0] + hold[0]; 
