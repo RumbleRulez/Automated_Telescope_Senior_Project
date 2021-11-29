@@ -162,11 +162,11 @@ void change_pos(int time, vector<vector<double>> future, vector<vector<double>> 
     
     //changing altitude
     cout << "Changing alt" << endl;
-    ALT_drive.rotate(6.35*delta[1]);
+    ALT_drive.rotate(5.952380952*delta[1]);
     cout << "Rotating " << delta[1] << " degrees" <<endl;
     
     cout << "Changing azi" << endl;
-    AZI_drive.rotate(18.21*delta[0]);
+    AZI_drive.rotate(17.06349206*delta[0]);
     cout << "Rotating " << delta[0] << " degrees" << endl;
 
 
@@ -268,6 +268,8 @@ int main(int argc, char *argv[]){
                 }
                 break;
             case 2:
+                AZI_drive.wake();
+                ALT_drive.wake();
                 //take desired coords
                 cout << "Please input new azimuth in degrees:" << endl;
                 cin >> azi;
@@ -290,12 +292,14 @@ int main(int argc, char *argv[]){
                 }
                 print_elev_azi_vector(current_pos);
                 
-                AZI_drive.wake();
-                ALT_drive.wake();
                 //change pos
                 change_pos(0, input_angle,current_pos,goingDown);
                 //print current position
                 current_pos = getIMU();
+                current_pos[0][0] += 270;
+                if(current_pos[0][0] > 360){
+	                current_pos[0][0] -= 360;
+                }
                 print_elev_azi_vector(current_pos);
                 //clear input vector
                 current_pos.clear();
