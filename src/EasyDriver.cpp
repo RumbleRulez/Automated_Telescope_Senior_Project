@@ -98,7 +98,7 @@ void EasyDriver::setSpeed(float rpm) {
 }
 
 void EasyDriver::step(int numberOfSteps){
-	cout << "Doing "<< numberOfSteps << " steps and going to sleep for " << uSecDelay/delayFactor << "uS\n";
+	//cout << "Doing "<< numberOfSteps << " steps and going to sleep for " << uSecDelay/delayFactor << "uS\n";
 	int sleepDelay = uSecDelay/delayFactor;
 	if(numberOfSteps>=0) {
 		if(clockwise) gpio_set_value(this->gpio_DIR, LOW);
@@ -123,8 +123,8 @@ void EasyDriver::step(int numberOfSteps){
 void EasyDriver::rotate(int degrees){
 	float degreesPerStep = 360.0f/getStepsPerRevolution();
 	int numberOfSteps = degrees/degreesPerStep;
-	cout << "The number of steps is " << numberOfSteps << endl;
-	cout << "The delay factor is " << delayFactor << endl;
+	//cout << "The number of steps is " << numberOfSteps << endl;
+	//cout << "The delay factor is " << delayFactor << endl;
 	step(numberOfSteps*delayFactor);
 }
 

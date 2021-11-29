@@ -220,32 +220,26 @@ int main(int argc, char *argv[]){
     vector<vector<double>> input_angle;
     
     //declare sys start
-    cout << "System Initialized" << endl;
+    //cout << "System Initialized" << endl;
     
     //get IMU data
-    current_pos = getIMU();
+    //current_pos = getIMU();
     
-    //azi + 90 degrees to calibrate to north
-    current_pos[0][0] -= 90;
     
-    cout << "IMU Initialized" << endl;
-    cout << "Current Pos: ";
-    print_elev_azi_vector(current_pos);
-    cout << "\n";
+    // cout << "IMU Initialized" << endl;
+    // cout << "Current Pos: ";
+    // print_elev_azi_vector(current_pos);
+    // cout << "\n";
 
     //loop to keep alive
     while(isOn){
     
-        //if azi is greater than 360 then sub 360 -- passes 0 point
-        if(current_pos[0][0] > 360){
-	        current_pos[0][0] -= 360;
-        }
 
         AZI_drive.sleep();
         ALT_drive.sleep();
 
-        cout << "Current Pos: ";
-        print_elev_azi_vector(current_pos);
+        //cout << "Current Pos: ";
+        //print_elev_azi_vector(current_pos);
         
         //print choice menu
         //and take in choice for top level
@@ -258,19 +252,23 @@ int main(int argc, char *argv[]){
                 isOn  = false;
                 break;
             case 1:
-                AZI_drive.wake();
-                ALT_drive.wake();
-                //print menu and take choice
-                print_body_menu();
-                cin >> choice;
-                //get future position from selected celestial body
-                future_pos = select_body(choice);
-                print_elev_azi_vector(future_pos);
-                change_pos(time, input_angle, current_pos, goingDown);
-                //sleep for a minute
-                this_thread::sleep_for(chrono::minutes(1));
-                //increase time to represent sleep
-                time++;
+                for(int i = 0; i < 20; i++){
+                    AZI_drive.wake();
+                    ALT_drive.wake();
+                    //print menu and take choice
+                    print_body_menu();
+                    cin >> choice;
+                    //get future position from selected celestial body
+                    future_pos = select_body(choice);
+                    print_elev_azi_vector(future_pos);
+                    change_pos(time, input_angle, current_pos, goingDown);
+                    AZI_drive.sleep();
+                    ALT_drive.sleep();
+                    //sleep for a minute
+                    this_thread::sleep_for(chrono::minutes(1));
+                    //increase time to represent sleep
+                    time++;
+                }
                 break;
             case 2:
                 //take desired coords
@@ -286,12 +284,18 @@ int main(int argc, char *argv[]){
                 cout << "input loaded" << endl;
                 //update current pos
                 current_pos = getIMU();
-
+                //if azi is greater than 360 then sub 360 -- passes 0 point
+                if(current_pos[0][0] > 360){
+	                current_pos[0][0] -= 360;
+                }
+                //azi + 90 degrees to calibrate to north
+                current_pos[0][0] -= 90;
                 AZI_drive.wake();
                 ALT_drive.wake();
                 //change pos
                 change_pos(0, input_angle,current_pos,goingDown);
                 //print current position
+                current_pos = getIMU();
                 print_elev_azi_vector(current_pos);
                 //clear input vector
                 current_pos.clear();
