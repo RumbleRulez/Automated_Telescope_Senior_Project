@@ -277,15 +277,15 @@ int main(int argc, char *argv[]){
                 input_angle.push_back(hold);
                 cout << "input loaded" << endl;
                 //update current pos
+                cout << "getting current position" << endl;
                 current_pos = getIMU();
-                print_elev_azi_vector(current_pos);
                 //if azi is greater than 360 then sub 360 -- passes 0 point
                 //azi + 90 degrees to calibrate to north
                 current_pos[0][0] -= 90;
                 if(current_pos[0][0] > 360){
 	                current_pos[0][0] -= 360;
                 }
-                
+                print_elev_azi_vector(current_pos);
                 
                 AZI_drive.wake();
                 ALT_drive.wake();
@@ -298,6 +298,8 @@ int main(int argc, char *argv[]){
                 current_pos.clear();
                 hold.clear();
                 input_angle.clear();
+                AZI_drive.sleep();
+                ALT_drive.sleep();
                 break;
             default:
                 cout << "Invalid option, please input the number corresponding to the choice" << endl;
