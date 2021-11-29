@@ -226,7 +226,7 @@ int main(int argc, char *argv[]){
     current_pos = getIMU();
     
     //azi + 90 degrees to calibrate to north
-    current_pos[0][0] += 90;
+    current_pos[0][0] -= 90;
     
     cout << "IMU Initialized" << endl;
     cout << "Current Pos: ";
@@ -241,6 +241,9 @@ int main(int argc, char *argv[]){
 	        current_pos[0][0] -= 360;
         }
 
+        AZI_drive.sleep();
+        ALT_drive.sleep();
+
         cout << "Current Pos: ";
         print_elev_azi_vector(current_pos);
         
@@ -249,8 +252,6 @@ int main(int argc, char *argv[]){
         print_top_menu();
         cin >> choice;
 
-        AZI_drive.sleep();
-        ALT_drive.sleep();
         switch(choice){
             case 0:
                 cout << "Thank you for using this product!" << endl;
