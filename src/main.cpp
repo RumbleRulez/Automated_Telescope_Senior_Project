@@ -10,7 +10,7 @@
 #include <thread>
 
 using namespace std;
-
+//test comment
 //Easydriver objects
 EasyDriver ALT_drive(67,68,44,26,46,144,200);
 EasyDriver AZI_drive(65,27,47,45,69,144,200);
@@ -69,6 +69,7 @@ void print_top_menu(){
     cout << "Welcome to the automated telescope tracking interface. \nPlease press the number corresponding to the desired action:" << endl;
     cout << "1. Track a Celestial body by name" << endl;
     cout << "2. Track telescope to coordinate" << endl;
+    cout << "3. Enter Motor Values Manually"<< endl;
     cout << "0. Quit" << endl;
 
     return;
@@ -178,16 +179,33 @@ void change_pos(int time, vector<vector<double>> future, vector<vector<double>> 
         perc_diff_azi =  (future[time][0] - temp_curr[0][0])/(future[time][0] - temp_curr[0][0]) *100;
     }
     if(future[time][0]> temp_curr[0][0])
-        AZI_drive.rotate(17.06349206*(future[time][0] + temp_curr[0][0]));
+       // AZI_drive.rotate(17.06349206*(future[time][0] + temp_curr[0][0]));
 
     if(future[time][1]!= temp_curr[0][1])
-        ALT_drive.rotate(8.928571428*(future[time][1] + temp_curr[0][1]));
+       // ALT_drive.rotate(8.928571428*(future[time][1] + temp_curr[0][1]));
 
     // current[0][0] = current[0][0] + hold[0]; 
     // current[0][1] = current[0][1] + hold[1];
     
     return;  
 
+}
+
+void motor_rotate_manual(double a, double e)
+{
+    //vector<double> delta;
+    //delta.push_back(future);
+    // Rotating Altitude
+    AZI_drive.wake();
+    this_thread::sleep_for(chrono::seconds(1));
+    cout << "Rotating Altitude: "<< endl;
+    AZI_drive.rotate(a*8.93);
+    // Rotating Elevation
+    AZI_drive.sleep();
+    ALT_drive.wake();
+    cout << "Rotating Elevation" << endl;
+    ALT_drive.rotate(e*17);
+    return;
 }
 
     /*   
@@ -320,7 +338,27 @@ int main(int argc, char *argv[]){
                 AZI_drive.sleep();
                 ALT_drive.sleep();
                 break;
-            default:
+            case 3:
+                //AZI_drive.wake();
+                //ALT_drive.wake();
+                // Desired Motor Rotation
+                cout << "Please input azimuth rotation:" << endl;
+                cin >> azi;
+                cout << "Please input elevation rotation:" << endl;
+                cin >> elev;
+                // Load into single vector
+                hold.push_back(azi);
+                hold.push_back(elev);
+                // Load into a double vector
+                input_angle.push_back(hold);
+                motor_rotate_manual(azi,elev);
+                // Clear Input Vectors
+                hold.clear();
+                input_angle.clear();
+                AZI_drive.sleep();
+                ALT_drive.sleep();
+                break;
+           default:
                 cout << "Invalid option, please input the number corresponding to the choice" << endl;
                 break;
         }
