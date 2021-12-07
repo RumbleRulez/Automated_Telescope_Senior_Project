@@ -154,6 +154,7 @@ void change_pos(int time, vector<vector<double>> future, vector<vector<double>> 
     vector<vector<double>> temp_curr;
     vector<double> delta;
     double perc_diff_azi = 0;
+    double perc_diff_ele = 0;
     cout << "change pos called" << endl;
     delta = get_change_pos(future, current, time, goingDown);
     cout << "delta vector: " << delta[0] << " " << delta[1] << endl;
@@ -165,20 +166,37 @@ void change_pos(int time, vector<vector<double>> future, vector<vector<double>> 
     
     //changing altitude
     cout << "Changing alt" << endl;
-    ALT_drive.rotate(8.928571428*delta[1]);
+    ALT_drive.wake();
+    this_thread::sleep_for(chrono::seconds(1));
+    ALT_drive.rotate(2*8.928571428*delta[1]);
     cout << "Rotating " << delta[1] << " degrees" <<endl;
-    
+    ALT_drive.sleep();
+
     cout << "Changing azi" << endl;
+    AZI_drive.wake();
+    this_thread::sleep_for(chrono::seconds(1));
     AZI_drive.rotate(17.06349206*delta[0]);
     cout << "Rotating " << delta[0] << " degrees" << endl;
 
     temp_curr = getIMU();
-    perc_diff_azi =  (future[time][0] - temp_curr[0][0])/(future[time][0] - temp_curr[0][0]) *100;
-    while(perc_diff_azi > 10){
+    perc_diff_azi =  abs(future[time][0] - temp_curr[0][0])/(future[time][0] + temp_curr[0][0]) * 200;
+    while(perc_diff_azi > 5){
         AZI_drive.rotate(17.06349206*(future[0][0] - temp_curr[0][0]));
         temp_curr = getIMU();
-        perc_diff_azi =  (future[time][0] - temp_curr[0][0])/(future[time][0] - temp_curr[0][0]) *100;
+        perc_diff_azi = abs(future[time][0] - temp_curr[0][0])/(future[time][0] + temp_curr[0][0]) *200;
     }
+    
+    AZI_drive.sleep();
+    ALT_drive.wake();
+    this_thread::sleep_for(chrono::seconds(1));
+    temp_curr = getIMU();
+    perc_diff_ele = abs(future[time][1] - temp_curr[0][1])/(future[time][1] + temp_curr[0][1]) * 200;
+    while (perc_diff_ele > 5){
+        ALT_drive.rotate(8.928571428*(future[0][1] - temp_curr[0][1]));
+        temp_curr = getIMU();
+        perc_diff_ele = abs(future[time][1] - temp_curr[0][1])/(future[time][1] + temp_curr[0][1]) * 200;
+    }
+
     if(future[time][0]> temp_curr[0][0])
        // AZI_drive.rotate(17.06349206*(future[time][0] + temp_curr[0][0]));
 
@@ -200,12 +218,12 @@ void motor_rotate_manual(double a, double e)
     AZI_drive.wake();
     this_thread::sleep_for(chrono::seconds(1));
     cout << "Rotating Altitude: "<< endl;
-    AZI_drive.rotate(a*8.93);
+    AZI_drive.rotate(a*8.928571428*2);
     // Rotating Elevation
     AZI_drive.sleep();
     ALT_drive.wake();
     cout << "Rotating Elevation" << endl;
-    ALT_drive.rotate(e*17);
+    ALT_drive.rotate(e*17.06349206*2);
     return;
 }
 
@@ -299,8 +317,8 @@ int main(int argc, char *argv[]){
                 }
                 break;
             case 2:
-                AZI_drive.wake();
-                ALT_drive.wake();
+                //AZI_drive.wake();
+                //ALT_drive.wake();
                 //take desired coords
                 cout << "Please input new azimuth in degrees:" << endl;
                 cin >> azi;
@@ -343,9 +361,9 @@ int main(int argc, char *argv[]){
                 //AZI_drive.wake();
                 //ALT_drive.wake();
                 // Desired Motor Rotation
-                cout << "Please input azimuth rotation:" << endl;
+                cout << "Please input azimuth rotation in degrees:" << endl;
                 cin >> azi;
-                cout << "Please input elevation rotation:" << endl;
+                cout << "Please input elevation rotation in degrees:" << endl;
                 cin >> elev;
                 // Load into single vector
                 hold.push_back(azi);
