@@ -16,6 +16,8 @@ using namespace std;
 EasyDriver ALT_drive(67,68,44,26,46,144,200);
 EasyDriver AZI_drive(65,27,47,45,69,144,200);
 
+vector<vector<double>> futpos;
+
 vector<vector<double>> get_body(string body_name){
     vector<vector<double>> data;
     vector<double> alt_hold;
@@ -58,7 +60,7 @@ vector<vector<double>> get_body(string body_name){
 void print_elev_azi_vector(vector<vector<double>> v){    
     for(int i = 0; i < v.size(); i++){
         for(int j = 0; j < v[i].size(); j++){
-            cout << v[i][j] << " ";
+            cout <<v[i][j] << " ";
         }
         cout << endl;
     }
@@ -79,12 +81,18 @@ void print_top_menu(){
 // >80 degrees danger detection
 bool is_danger(vector<vector<double>> future_pos, int time, bool &goingDown){
     cout << "Verifying danger zone" << endl;
-    if(future_pos[time][1] > 80){
+    cout << "IDK does this help?" << endl;
+    double TestPleaseGod = futpos[0][0];				// future_pos -> futpos
+    cout << "You Idiot: "<<TestPleaseGod<<endl;
+//    for(int i=0; i<f_pos.size(); i++){for(int j=0;j<f_pos[i].size();j++){cout<<f_pos[i][j]<<" ";}cout<<endl;}
+    if(futpos[0][time] > 80){						// future_pos -> futpos
+        cout<<"Is Danger, True."<<endl;
         goingDown = !goingDown;
         AZI_drive.rotate(180);
-        cout << "is_danger future pos: " << future_pos[time][1] << endl;
+        cout << "is_danger future pos: " << futpos[time][1] << endl;	// future_pos -> futpos
         return true;
     }else{
+        cout<<"Is Danger, False."<<endl;
         return false;
     }
 }
@@ -121,7 +129,7 @@ vector<vector<double>> getIMU(){
 vector<double> get_change_pos(vector<vector<double>> future,vector<vector<double>> current, int time_index, bool &goingDown){
     vector<double> delta;
     double hold1, hold2;
-
+    printf ("%d",futpos[1][1]);
     cout << "Calculating change in position...in progress" << endl;
     
     if(is_danger(future,time_index, goingDown)){
@@ -131,16 +139,16 @@ vector<double> get_change_pos(vector<vector<double>> future,vector<vector<double
         return delta;
     }else{
         if(goingDown){
-            cout << "Calculated change in position" << endl;
-            hold1 = future[time_index][0] - current[0][0];
-            hold2 = -1*(future[time_index][1] - current[0][1]);
+            cout << "Calculated change in position, going down." << endl;
+            hold1 = futpos[time_index][0] - current[0][0];			// future -> futpos
+            hold2 = -1*(futpos[time_index][1] - current[0][1]);			// future -> futpos
             delta.push_back(hold1);
             delta.push_back(hold2);
             return delta;
         }else{
-            cout << "Calculated change in position" << endl;
-            hold1 = future[time_index][0] - current[0][0];
-            hold2 = future[time_index][1] - current[0][1];
+            cout << "Calculated change in position, going up." << endl;
+            hold1 = futpos[time_index][0] - current[0][0];			// future -> futpos
+            hold2 = futpos[time_index][1] - current[0][1];			// future -> futpos
             delta.push_back(hold1);
             delta.push_back(hold2);
             return delta;
@@ -192,7 +200,7 @@ void change_pos(int time, vector<vector<double>> future, vector<vector<double>> 
     temp_curr = getIMU();
     perc_diff_ele = abs(future[time][1] - temp_curr[0][1])/(future[time][1] + temp_curr[0][1]) * 200;
     while (perc_diff_ele > 5){
-        ALT_drive.rotate(8.928571428*(future[0][1] - temp_curr[0][1]));
+        ALT_drive.rotate(1.8*8.928571428*(future[0][1] - temp_curr[0][1]));
         temp_curr = getIMU();
         perc_diff_ele = abs(future[time][1] - temp_curr[0][1])/(future[time][1] + temp_curr[0][1]) * 200;
     }
@@ -217,13 +225,13 @@ void motor_rotate_manual(double a, double e)
     // Rotating Altitude
     AZI_drive.wake();
     this_thread::sleep_for(chrono::seconds(1));
-    cout << "Rotating Altitude: "<< endl;
-    AZI_drive.rotate(a*8.928571428*2);
+    cout << "Rotating Azimuth: "<< endl;
+    AZI_drive.rotate(a*17.06349206);
     // Rotating Elevation
     AZI_drive.sleep();
     ALT_drive.wake();
     cout << "Rotating Elevation" << endl;
-    ALT_drive.rotate(e*17.06349206*2);
+    ALT_drive.rotate(e*15.25*2);
     return;
 }
 
@@ -300,16 +308,26 @@ int main(int argc, char *argv[]){
             case 1:
                 for(int i = 0; i < 20; i++){
                     AZI_drive.wake();
+                    cout << "AZI Drive Awake."<<endl;
                     ALT_drive.wake();
+                    cout << "ALT Drive Awake."<<endl;
                     //print menu and take choice
                     print_body_menu();
+                    cout << "Print Body Menu."<<endl;
                     cin >> choice;
+                    cout<<"Choice Entered."<<endl;
                     //get future position from selected celestial body
                     future_pos = select_body(choice);
-                    //print_elev_azi_vector(future_pos);
+                    futpos = future_pos;							// Bypass the SegFault Security Error.
+                    cout<<"Future Position Determined."<<endl;
+                    print_elev_azi_vector(future_pos);
+                    cout<<"Future Coordinates Determined."<<endl;
                     change_pos(time, input_angle, current_pos, goingDown);
+                    cout<<"Changed Position."<<endl;
                     AZI_drive.sleep();
+                    cout<<"AZI Drive Asleep."<<endl;
                     ALT_drive.sleep();
+                    cout<<"ALT Drive Asleep."<<endl;
                     //sleep for a minute
                     this_thread::sleep_for(chrono::minutes(1));
                     //increase time to represent sleep
