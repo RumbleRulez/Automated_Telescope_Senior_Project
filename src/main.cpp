@@ -82,11 +82,11 @@ void print_top_menu(){
 bool is_danger(vector<vector<double>> future_pos, int time, bool &goingDown){
     cout << "Verifying danger zone" << endl;
 
-    if(futpos[0][time] > 80){						// future_pos -> futpos
+    if(futpos[0][time] > 80){						// future_pos -> futpos; curtime
         cout<<"Is Danger, True."<<endl;
         goingDown = !goingDown;
         AZI_drive.rotate(180);
-        cout << "is_danger future pos: " << futpos[time][1] << endl;	// future_pos -> futpos
+        cout << "is_danger future pos: " << futpos[time][1] << endl;	// future_pos -> futpos;  curtime
         return true;
     }else{
         cout<<"Is Danger, False."<<endl;
@@ -123,12 +123,12 @@ vector<vector<double>> getIMU(){
 }
 
 //function to get change in current position to future position
-vector<double> get_change_pos(vector<vector<double>> future,vector<vector<double>> current, int time_index, bool &goingDown){
+vector<double> get_change_pos(vector<vector<double>> future,vector<vector<double>> current, int time, bool &goingDown){
     vector<double> delta;
     double hold1, hold2;
     cout << "Calculating change in position...in progress" << endl;
     
-    if(is_danger(future,time_index, goingDown)){
+    if(is_danger(future,time, goingDown)){				// curtime_index -> curtime
         cout << "Danger Zone Detected: Sleeping..." << endl;
         delta.push_back(0.0);
         delta.push_back(0.0);
@@ -136,15 +136,15 @@ vector<double> get_change_pos(vector<vector<double>> future,vector<vector<double
     }else{
         if(goingDown){
             cout << "Calculated change in position, going down." << endl;
-            hold1 = futpos[time_index][0] - current[0][0];			// future -> futpos
-            hold2 = -1*(futpos[time_index][1] - current[0][1]);			// future -> futpos
+            hold1 = futpos[time][0] - current[0][0];			// future -> futpos;  
+            hold2 = -1*(futpos[time][1] - current[0][1]);			// future -> futpos
             delta.push_back(hold1);
             delta.push_back(hold2);
             return delta;
         }else{
             cout << "Calculated change in position, going up." << endl;
-            hold1 = futpos[time_index][0] - current[0][0];			// future -> futpos
-            hold2 = futpos[time_index][1] - current[0][1];			// future -> futpos
+            hold1 = futpos[time][0] - current[0][0];			// future -> futpos
+            hold2 = futpos[time][1] - current[0][1];			// future -> futpos
             cout << "About to delta push back, hold 1."<<endl;			// More Ben Comments
             delta.push_back(hold1);
             cout << "About to delta push back, hold 2."<<endl;			// More Ben Comments
@@ -191,7 +191,7 @@ void change_pos(int time, vector<vector<double>> future, vector<vector<double>> 
     cout<<"Calculating Percent Difference For Azimuth."<<endl;
     perc_diff_azi =  abs(futpos[time][0] - curpos[0][0])/(futpos[time][0] + curpos[0][0]) * 200;	// future -> futpos; temp_curr -> curpos
     while(perc_diff_azi > 5){
-        AZI_drive.rotate(17.06349206*(futpos[0][0] - curpos[0][0]));					// future -> futpos; temp_curr -> curpos
+        AZI_drive.rotate(17.06349206*(futpos[time][0] - curpos[0][0]));					// future -> futpos; temp_curr -> curpos
         temp_curr = getIMU();
         curpos = temp_curr;
         perc_diff_azi = abs(futpos[time][0] - curpos[0][0])/(futpos[time][0] + curpos[0][0]) *200;// future -> futpos; temp_curr -> curpos
@@ -205,17 +205,17 @@ void change_pos(int time, vector<vector<double>> future, vector<vector<double>> 
     curpos = temp_curr;
     perc_diff_ele = abs(futpos[time][1] - curpos[0][1])/(futpos[time][1] + curpos[0][1]) * 200;
     while (perc_diff_ele > 5){
-        ALT_drive.rotate(1.8*8.928571428*(futpos[0][1] - curpos[0][1]));
+        ALT_drive.rotate(1.8*8.928571428*(futpos[time][1] - curpos[0][1]));
         temp_curr = getIMU();
         curpos = temp_curr;
         perc_diff_ele = abs(futpos[time][1] - curpos[0][1])/(futpos[time][1] + curpos[0][1]) * 200;
     }
 
-    //if(future[time][0]> temp_curr[0][0])
-       // AZI_drive.rotate(17.06349206*(future[time][0] + temp_curr[0][0]));
+    //if(future[curtime][0]> temp_curr[0][0])
+       // AZI_drive.rotate(17.06349206*(future[curtime][0] + temp_curr[0][0]));
 
-    //if(future[time][1]!= temp_curr[0][1])
-       // ALT_drive.rotate(8.928571428*(future[time][1] + temp_curr[0][1]));
+    //if(future[curtime][1]!= temp_curr[0][1])
+       // ALT_drive.rotate(8.928571428*(future[curtime][1] + temp_curr[0][1]));
 
     // current[0][0] = current[0][0] + hold[0]; 
     // current[0][1] = current[0][1] + hold[1];
@@ -267,7 +267,8 @@ void motor_rotate_manual(double a, double e)
 
 int main(int argc, char *argv[]){
     //hold vars for menu
-    int choice, time = 0;
+    int choice;
+    int time = 0;					// Global
     bool isOn = true, goingDown = false;
     double azi, elev;
     string body;
@@ -317,20 +318,22 @@ int main(int argc, char *argv[]){
                     cout << "AZI Drive Awake."<<endl;
                     ALT_drive.wake();
                     cout << "ALT Drive Awake."<<endl;
-                    //print menu and take choice
-                    print_body_menu();
-                    cout << "Print Body Menu."<<endl;
-                    cin >> choice;
-                    cout<<"Choice Entered."<<endl;
+                    if (i == 0){
+                        //print menu and take choice
+                        print_body_menu();
+                        cout << "Print Body Menu."<<endl;
+                        cin >> choice;
+                        cout<<"Choice Entered."<<endl;}
                     // get current position from IMU
                     current_pos = getIMU();
                     curpos = current_pos;							// Put in global to bypass
                     //get future position from selected celestial body
-                    future_pos = select_body(choice);
-                    futpos = future_pos;							// Bypass the SegFault Security Error.
-                    cout<<"Future Position Determined."<<endl;
-                    //print_elev_azi_vector(future_pos);
-                    cout<<"Future Coordinates Determined."<<endl;
+                    if (i == 0){
+                        future_pos = select_body(choice);
+                        futpos = future_pos;							// Bypass the SegFault Security Error.
+                        cout<<"Future Position Determined."<<endl;
+                        //print_elev_azi_vector(future_pos);
+                        cout<<"Future Coordinates Determined."<<endl;}
                     change_pos(time, input_angle, current_pos, goingDown);
                     current_pos.clear();							// Clear Current_pos
                     curpos.clear();								// curpos cleared
@@ -341,9 +344,10 @@ int main(int argc, char *argv[]){
                     cout<<"ALT Drive Asleep."<<endl;
                     //sleep for a minute
                     this_thread::sleep_for(chrono::minutes(1));
-                    //increase time to represent sleep
+                    //increase curtime to represent sleep
                     time++;
                 }
+                time = 0;
                 break;
             case 2:
                 //AZI_drive.wake();
