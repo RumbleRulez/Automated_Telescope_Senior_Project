@@ -10,9 +10,9 @@ sensor = adafruit_bno055.BNO055_I2C(i2c)
 
 sensor.mode = adafruit_bno055.CONFIG_MODE
 
-sensor.offsets_gyroscope = 0,-2, 0
-sensor.offsets_accelerometer = 21, -21, -16
-sensor.offsets_magnetometer = 8, 40, -434
+sensor.offsets_gyroscope = -1,-3,0
+sensor.offsets_accelerometer = -4,-39,-17
+sensor.offsets_magnetometer = 104,18,-327
 
 sensor.mode = adafruit_bno055.NDOF_MODE
 print("Writing Data...")
